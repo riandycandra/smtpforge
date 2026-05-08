@@ -1,8 +1,10 @@
 "use client";
 
 import Link from 'next/link';
+import { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Mail, Key, Activity, Server, LayoutDashboard, LogOut } from 'lucide-react';
+import { AuthService } from '@/services/api/auth.service';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -16,8 +18,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const router = useRouter();
 
+  useEffect(() => {
+    const token = localStorage.getItem('admin_token');
+    if (!token) {
+      router.push('/login');
+    }
+  }, [router]);
+
   const handleLogout = () => {
-    localStorage.removeItem('admin_token');
+    AuthService.logout();
     router.push('/login');
   };
 
