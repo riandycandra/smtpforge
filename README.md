@@ -1,4 +1,4 @@
-# 🚀 SMTP Forge
+# SMTP Forge
 
 A powerful, self-hosted email relay service designed for developers who need full control over their email delivery pipeline. Built to handle complex SMTP configurations, support self-signed certificates, and provide a clean dashboard for monitoring.
 
