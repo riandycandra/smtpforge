@@ -1,0 +1,28 @@
+.git
+.gitignore
+.dockerignore
+.vscode/
+.idea/
+
+node_modules/
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+dist/
+build/
+.next/
+out/
+
+# Environment files
+.env
+.env.*
+
+# Docker and deployment
+docker/
+docker-compose*.yml
+
+# Docs and scripts
+docs/
+scripts/
+README.md

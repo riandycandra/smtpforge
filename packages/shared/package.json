@@ -1,0 +1,17 @@
+{
+  "name": "@mailer/shared",
+  "version": "1.0.0",
+  "private": true,
+  "files": [
+    "dist",
+    "src"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

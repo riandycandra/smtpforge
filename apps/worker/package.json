@@ -1,0 +1,32 @@
+{
+  "name": "@mailer/worker",
+  "version": "1.0.0",
+  "private": true,
+  "files": ["dist", "src"],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts"
+  },
+  "dependencies": {
+    "@mailer/database": "workspace:*",
+    "@mailer/shared": "workspace:*",
+    "axios": "^1.6.8",
+    "bullmq": "^5.4.2",
+    "dotenv": "^16.4.5",
+    "ioredis": "^5.3.2",
+    "mime-types": "^2.1.35",
+    "nodemailer": "^6.9.13",
+    "pg": "^8.11.3",
+    "pg-hstore": "^2.3.4",
+    "prom-client": "^15.1.0",
+    "sequelize": "^6.37.1",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/nodemailer": "^6.4.14",
+    "@types/uuid": "^9.0.8",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.4.0"
+  }
+}
