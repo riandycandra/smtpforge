@@ -20,12 +20,12 @@ export default function EditApiKeyPage() {
   const router = useRouter();
   const params = useParams();
   const id = params.id as string;
-  
+
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
-  
+
   const [permissions, setPermissions] = useState<any[]>([]);
   const [allSmtp, setAllSmtp] = useState<any[]>([]);
   const [selectedSmtp, setSelectedSmtp] = useState('');
@@ -57,11 +57,11 @@ export default function EditApiKeyPage() {
             is_active: data.is_active,
           });
         }
-        
+
         if (permRes.success) {
           setPermissions(permRes.data);
         }
-        
+
         if (smtpRes.success) {
           setAllSmtp(smtpRes.data.data || []);
         }
@@ -83,7 +83,7 @@ export default function EditApiKeyPage() {
         rate_limit_per_hour: data.rate_limit_per_hour || null,
         is_active: data.is_active,
       };
-      
+
       const res: any = await ApiKeyService.updateKey(id, payload);
       if (res.success) {
         setSuccess('API Key updated successfully.');
@@ -95,7 +95,7 @@ export default function EditApiKeyPage() {
 
   const handleDelete = async () => {
     if (!window.confirm('Are you sure you want to delete this API Key?')) return;
-    
+
     try {
       setDeleting(true);
       const res: any = await ApiKeyService.deleteKey(id);
@@ -110,7 +110,7 @@ export default function EditApiKeyPage() {
 
   const handleAssignPermission = async () => {
     if (!selectedSmtp) return;
-    
+
     try {
       setAssigning(true);
       setError('');
@@ -131,7 +131,7 @@ export default function EditApiKeyPage() {
 
   const handleRemovePermission = async (smtpId: string) => {
     if (!window.confirm('Remove this SMTP permission?')) return;
-    
+
     try {
       setError('');
       setSuccess('');

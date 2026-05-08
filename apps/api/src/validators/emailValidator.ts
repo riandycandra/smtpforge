@@ -2,18 +2,24 @@ import { body } from 'express-validator';
 
 export const sendEmailValidator = [
   body('smtp_account')
-    .notEmpty()
-    .withMessage('smtp_account is required')
+    .optional()
     .isUUID()
     .withMessage('smtp_account must be a valid UUID'),
-  
+
   body('to')
-    .isArray({ min: 1 })
-    .withMessage('to must be an array with at least one recipient'),
-  body('to.*')
-    .isEmail()
-    .withMessage('All items in to array must be valid email addresses')
-    .isLength({ max: 255 }),
+    .notEmpty()
+    .withMessage('to is required')
+    .custom((value) => {
+      if (Array.isArray(value)) {
+        if (value.length === 0) throw new Error('to array must have at least one recipient');
+        return value.every(email => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
+      }
+      if (typeof value === 'string') {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+      }
+      return false;
+    })
+    .withMessage('to must be a valid email string or an array of valid email addresses'),
 
   body('cc')
     .optional()

@@ -16,6 +16,14 @@ SmtpAccount.belongsToMany(ApiKey, {
   otherKey: 'api_key_id',
 });
 
+// Explicit associations for the junction table itself
+ApiKeySmtpPermission.belongsTo(SmtpAccount, {
+  foreignKey: 'smtp_account_id',
+});
+ApiKeySmtpPermission.belongsTo(ApiKey, {
+  foreignKey: 'api_key_id',
+});
+
 // EmailJob -> ApiKey (Many to One)
 EmailJob.belongsTo(ApiKey, {
   foreignKey: 'api_key_id',

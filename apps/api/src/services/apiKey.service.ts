@@ -1,4 +1,4 @@
-import { ApiKey, ApiKeySmtpPermission } from '@mailer/database';
+import { ApiKey, ApiKeySmtpPermission, SmtpAccount } from '@mailer/database';
 import { generateApiKey, hashApiKey } from '../utils/apiKey';
 import { sequelize } from '@mailer/database';
 
@@ -85,6 +85,10 @@ export async function removeSmtpPermission(apiKeyId: string, smtpAccountId: stri
 
 export async function getSmtpPermissions(apiKeyId: string) {
   return await ApiKeySmtpPermission.findAll({
-    where: { api_key_id: apiKeyId }
+    where: { api_key_id: apiKeyId },
+    include: [{
+      model: SmtpAccount,
+      attributes: ['id', 'name', 'host', 'is_active']
+    }]
   });
 }

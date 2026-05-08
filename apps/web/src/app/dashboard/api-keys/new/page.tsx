@@ -55,13 +55,13 @@ export default function NewApiKeyPage() {
             <Check className="w-8 h-8 text-green-600" />
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">API Key Created Successfully</h2>
-          
+
           <div className="bg-yellow-50 border border-yellow-200 rounded p-4 my-6 flex items-start text-left">
             <AlertTriangle className="w-5 h-5 text-yellow-600 mr-3 flex-shrink-0 mt-0.5" />
             <div>
               <h4 className="text-sm font-bold text-yellow-800">Important: Save this key now!</h4>
               <p className="text-sm text-yellow-700 mt-1">
-                For security reasons, this API key will <strong>only be shown once</strong>. 
+                For security reasons, this API key will <strong>only be shown once</strong>.
                 You will not be able to view it again after leaving this page.
               </p>
             </div>
@@ -71,7 +71,7 @@ export default function NewApiKeyPage() {
             <code className="text-gray-900 font-mono text-lg break-all mr-4">{createdKey.api_key}</code>
             <button
               onClick={handleCopy}
-              className="flex items-center px-4 py-2 bg-white border border-gray-300 rounded shadow-sm hover:bg-gray-50 text-sm font-medium"
+              className="flex items-center px-4 py-2 bg-white border border-gray-300 rounded shadow-sm hover:bg-gray-50 text-sm font-medium text-gray-600"
             >
               {copied ? <Check className="w-4 h-4 mr-2 text-green-600" /> : <Copy className="w-4 h-4 mr-2 text-gray-600" />}
               {copied ? 'Copied' : 'Copy'}
