@@ -27,6 +27,9 @@ export async function getTransporter(smtpAccountId: string): Promise<{ transport
       user: account.username,
       pass: decryptedPassword,
     },
+    tls: {
+      rejectUnauthorized: !account.ignore_tls_errors,
+    },
     // Pool allows keeping connection alive, but for simple transactional we just use default
     pool: false, 
   } as any);

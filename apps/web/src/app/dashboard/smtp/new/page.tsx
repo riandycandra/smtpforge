@@ -21,6 +21,7 @@ const formSchema = z.object({
   retry_attempts: z.coerce.number().min(0).max(10).default(3),
   rate_limit_per_hour: z.coerce.number().min(1).optional().or(z.literal('')),
   is_active: z.boolean().default(true),
+  ignore_tls_errors: z.boolean().default(false),
 });
 
 export default function NewSmtpPage() {
@@ -34,6 +35,7 @@ export default function NewSmtpPage() {
       secure: false,
       retry_attempts: 3,
       is_active: true,
+      ignore_tls_errors: false,
     }
   });
 
@@ -175,6 +177,15 @@ export default function NewSmtpPage() {
                   className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                 />
                 <span className="ml-2 text-sm text-gray-700">Set Active immediately</span>
+              </label>
+
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  {...register('ignore_tls_errors')}
+                  className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                />
+                <span className="ml-2 text-sm text-gray-700">Allow self-signed certificates (Ignore TLS errors)</span>
               </label>
             </div>
           </div>

@@ -66,6 +66,9 @@ export async function testSmtpConnection(id: string) {
       user: account.username,
       pass: decryptedPassword,
     },
+    tls: {
+      rejectUnauthorized: !account.ignore_tls_errors,
+    }
   });
 
   const start = Date.now();

@@ -14,11 +14,12 @@ export interface SmtpAccountAttributes {
   retry_attempts: number;
   rate_limit_per_hour: number | null;
   is_active: boolean;
+  ignore_tls_errors: boolean;
   created_at?: Date;
   updated_at?: Date;
 }
 
-export interface SmtpAccountCreationAttributes extends Optional<SmtpAccountAttributes, 'id' | 'secure' | 'retry_attempts' | 'is_active' | 'from_name' | 'rate_limit_per_hour'> {}
+export interface SmtpAccountCreationAttributes extends Optional<SmtpAccountAttributes, 'id' | 'secure' | 'retry_attempts' | 'is_active' | 'from_name' | 'rate_limit_per_hour' | 'ignore_tls_errors'> {}
 
 export class SmtpAccount extends Model<SmtpAccountAttributes, SmtpAccountCreationAttributes> implements SmtpAccountAttributes {
   declare id: string;
@@ -33,6 +34,7 @@ export class SmtpAccount extends Model<SmtpAccountAttributes, SmtpAccountCreatio
   declare retry_attempts: number;
   declare rate_limit_per_hour: number | null;
   declare is_active: boolean;
+  declare ignore_tls_errors: boolean;
   declare created_at: Date;
   declare updated_at: Date;
 }
@@ -90,6 +92,11 @@ SmtpAccount.init({
     type: DataTypes.BOOLEAN,
     allowNull: false,
     defaultValue: true,
+  },
+  ignore_tls_errors: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
   },
 }, {
   sequelize,
