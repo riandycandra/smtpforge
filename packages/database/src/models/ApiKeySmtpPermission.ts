@@ -12,11 +12,11 @@ export interface ApiKeySmtpPermissionAttributes {
 export interface ApiKeySmtpPermissionCreationAttributes extends Optional<ApiKeySmtpPermissionAttributes, 'id'> {}
 
 export class ApiKeySmtpPermission extends Model<ApiKeySmtpPermissionAttributes, ApiKeySmtpPermissionCreationAttributes> implements ApiKeySmtpPermissionAttributes {
-  public id!: string;
-  public api_key_id!: string;
-  public smtp_account_id!: string;
-  public readonly created_at!: Date;
-  public readonly updated_at!: Date;
+  declare id: string;
+  declare api_key_id: string;
+  declare smtp_account_id: string;
+  declare created_at: Date;
+  declare updated_at: Date;
 }
 
 ApiKeySmtpPermission.init({

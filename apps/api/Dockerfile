@@ -16,6 +16,7 @@ RUN pnpm install --frozen-lockfile
 
 # Build the shared package and the api
 RUN pnpm --filter @mailer/shared build
+RUN pnpm --filter @mailer/database build
 RUN pnpm --filter api build
 
 # Deploy isolated api app and its dependencies to /app/out

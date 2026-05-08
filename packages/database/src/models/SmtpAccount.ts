@@ -21,20 +21,20 @@ export interface SmtpAccountAttributes {
 export interface SmtpAccountCreationAttributes extends Optional<SmtpAccountAttributes, 'id' | 'secure' | 'retry_attempts' | 'is_active' | 'from_name' | 'rate_limit_per_hour'> {}
 
 export class SmtpAccount extends Model<SmtpAccountAttributes, SmtpAccountCreationAttributes> implements SmtpAccountAttributes {
-  public id!: string;
-  public name!: string;
-  public host!: string;
-  public port!: number;
-  public secure!: boolean;
-  public username!: string;
-  public password_encrypted!: string;
-  public from_email!: string;
-  public from_name!: string | null;
-  public retry_attempts!: number;
-  public rate_limit_per_hour!: number | null;
-  public is_active!: boolean;
-  public readonly created_at!: Date;
-  public readonly updated_at!: Date;
+  declare id: string;
+  declare name: string;
+  declare host: string;
+  declare port: number;
+  declare secure: boolean;
+  declare username: string;
+  declare password_encrypted: string;
+  declare from_email: string;
+  declare from_name: string | null;
+  declare retry_attempts: number;
+  declare rate_limit_per_hour: number | null;
+  declare is_active: boolean;
+  declare created_at: Date;
+  declare updated_at: Date;
 }
 
 SmtpAccount.init({

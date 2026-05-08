@@ -11,6 +11,7 @@ COPY apps/worker ./apps/worker
 RUN pnpm install --frozen-lockfile
 
 RUN pnpm --filter @mailer/shared build
+RUN pnpm --filter @mailer/database build
 RUN pnpm --filter worker build
 
 RUN pnpm --filter worker --prod --legacy deploy /app/out

@@ -26,24 +26,24 @@ export interface EmailJobAttributes {
 export interface EmailJobCreationAttributes extends Optional<EmailJobAttributes, 'id' | 'cc' | 'bcc' | 'attachments' | 'error_message' | 'smtp_response' | 'retry_count' | 'latency_ms' | 'sent_at'> {}
 
 export class EmailJob extends Model<EmailJobAttributes, EmailJobCreationAttributes> implements EmailJobAttributes {
-  public id!: string;
-  public job_id!: string;
-  public api_key_id!: string;
-  public smtp_account_id!: string;
-  public to!: string[];
-  public cc!: string[] | null;
-  public bcc!: string[] | null;
-  public subject!: string;
-  public html!: string;
-  public attachments!: any[] | null;
-  public status!: EmailStatus;
-  public error_message!: string | null;
-  public smtp_response!: string | null;
-  public retry_count!: number;
-  public latency_ms!: number | null;
-  public sent_at!: Date | null;
-  public readonly created_at!: Date;
-  public readonly updated_at!: Date;
+  declare id: string;
+  declare job_id: string;
+  declare api_key_id: string;
+  declare smtp_account_id: string;
+  declare to: string[];
+  declare cc: string[] | null;
+  declare bcc: string[] | null;
+  declare subject: string;
+  declare html: string;
+  declare attachments: any[] | null;
+  declare status: EmailStatus;
+  declare error_message: string | null;
+  declare smtp_response: string | null;
+  declare retry_count: number;
+  declare latency_ms: number | null;
+  declare sent_at: Date | null;
+  declare created_at: Date;
+  declare updated_at: Date;
 }
 
 EmailJob.init({

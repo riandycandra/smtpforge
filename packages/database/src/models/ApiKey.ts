@@ -14,13 +14,13 @@ export interface ApiKeyAttributes {
 export interface ApiKeyCreationAttributes extends Optional<ApiKeyAttributes, 'id' | 'is_active' | 'rate_limit_per_hour'> {}
 
 export class ApiKey extends Model<ApiKeyAttributes, ApiKeyCreationAttributes> implements ApiKeyAttributes {
-  public id!: string;
-  public name!: string;
-  public api_key_hash!: string;
-  public is_active!: boolean;
-  public rate_limit_per_hour!: number | null;
-  public readonly created_at!: Date;
-  public readonly updated_at!: Date;
+  declare id: string;
+  declare name: string;
+  declare api_key_hash: string;
+  declare is_active: boolean;
+  declare rate_limit_per_hour: number | null;
+  declare created_at: Date;
+  declare updated_at: Date;
 }
 
 ApiKey.init({

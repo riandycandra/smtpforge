@@ -79,7 +79,7 @@ export async function testSmtpConnection(id: string) {
     return {
       success: false,
       latency_ms: Date.now() - start,
-      error: 'Connection failed (details hidden for security)',
+      error: `Connection failed: ${error.message || 'Unknown error'}`,
     };
   }
 }
