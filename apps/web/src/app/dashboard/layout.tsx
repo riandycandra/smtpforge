@@ -35,7 +35,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Sidebar */}
       <div className="w-64 bg-white border-r border-gray-200 flex flex-col">
         <div className="h-16 flex items-center px-6 border-b border-gray-200">
-          <span className="text-lg font-bold text-gray-900">Mailer Platform</span>
+          <span className="text-lg font-bold text-gray-900">SMTP Forge</span>
         </div>
         
         <nav className="flex-1 overflow-y-auto py-4">

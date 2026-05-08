@@ -46,7 +46,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-gray-100 font-sans">
       <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-lg border border-gray-100">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Mailer Admin</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">SMTP Forge</h1>
           <p className="text-gray-500">Sign in to manage your email service</p>
         </div>
         
