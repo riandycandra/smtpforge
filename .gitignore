@@ -43,3 +43,6 @@ Thumbs.db
 # Coverage
 coverage/
 .nyc_output/
+
+# Data volumes
+data/
