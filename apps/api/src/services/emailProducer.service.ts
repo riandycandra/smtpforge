@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import { emailQueue } from '../config/queue';
 import { EmailJob } from '@mailer/database';
 import { EmailJobPayload, EMAIL_STATUS } from '@mailer/shared';
@@ -6,7 +7,7 @@ import { QUEUE_NAME_EMAIL_DELIVERY, QUEUE_DEFAULT_JOB_OPTIONS } from '@mailer/sh
 export async function enqueueEmailJob(payload: Omit<EmailJobPayload, 'email_job_id'>) {
   // 1. Create the persistent record
   const emailJob = await EmailJob.create({
-    job_id: 'pending', // Will update immediately after enqueue
+    job_id: `pending-${uuidv4()}`, // Use unique ID to avoid DB unique constraint conflict
     api_key_id: payload.api_key_id,
     smtp_account_id: payload.smtp_account_id,
     to: payload.to,
