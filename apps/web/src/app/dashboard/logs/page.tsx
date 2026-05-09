@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { LogsService } from '@/services/api/logs.service';
-import { Mail, Search, RefreshCw, AlertCircle, CheckCircle, Clock, Loader2, RotateCcw, Eye, X, Server } from 'lucide-react';
+import { Mail, Search, RefreshCw, AlertCircle, CheckCircle, Clock, Loader2, RotateCcw, Eye, X, Server, Paperclip, ExternalLink as ExternalLinkIcon } from 'lucide-react';
 import DOMPurify from 'dompurify';
 
 interface EmailLog {
@@ -11,6 +11,7 @@ interface EmailLog {
   to: string[];
   subject: string;
   html: string;
+  attachments?: Array<{ filename: string; path?: string; url?: string; content_type?: string }>;
   error_message?: string;
   smtp_response?: string;
   created_at: string;
@@ -340,6 +341,31 @@ export default function LogsDashboardPage() {
                 </div>
               </div>
             </div>
+
+            {/* Attachments Section */}
+            {selectedLog.attachments && selectedLog.attachments.length > 0 && (
+              <div className="px-8 py-3 bg-gray-50 dark:bg-gray-800/30 border-b border-gray-100 dark:border-gray-800">
+                <div className="flex items-center gap-2 mb-2">
+                  <Paperclip className="w-4 h-4 text-gray-400" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Attachments ({selectedLog.attachments.length})</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {selectedLog.attachments.map((att, idx) => (
+                    <a 
+                      key={idx}
+                      href={att.path || att.url} 
+                      target="_blank" 
+                      rel="noreferrer"
+                      className="inline-flex items-center px-3 py-1.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-xs font-medium text-gray-700 dark:text-gray-300 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all shadow-sm"
+                    >
+                      <Paperclip className="w-3 h-3 mr-2 opacity-50" />
+                      {att.filename}
+                      <ExternalLinkIcon className="w-3 h-3 ml-2 opacity-30" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Content Area */}
             <div className="flex-1 overflow-hidden flex bg-gray-50 dark:bg-gray-950">
