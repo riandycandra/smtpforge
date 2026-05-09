@@ -57,6 +57,7 @@ All requests to the public API must include the following header:
 | `subject` | `string` | Yes | The email subject. |
 | `html` | `string` | Yes | The HTML body of the email. |
 | `text` | `string` | No | Plain text fallback. |
+| `attachments` | `array` | No | List of files to attach. Each object requires `filename` and `url`. |
 | `smtp_account` | `UUID` | No | Specific account to use. If omitted, the platform auto-selects an active account. |
 
 **Example (Bash)**:
@@ -68,6 +69,24 @@ curl -X POST http://localhost:3000/api/v1/emails \
     "to": "user@example.com",
     "subject": "Test Email",
     "html": "<h1>Hello from SMTP Forge!</h1>"
+  }'
+```
+
+**Example with Attachments**:
+```bash
+curl -X POST http://localhost:3000/api/v1/emails \
+  -H "Content-Type: application/json" \
+  -H "X-Mailer-Api-Key: your_key_here" \
+  -d '{
+    "to": "user@example.com",
+    "subject": "Email with Attachment",
+    "html": "<p>See the attached file.</p>",
+    "attachments": [
+      {
+        "filename": "cat.jpg",
+        "url": "https://example.com/images/cat.jpg"
+      }
+    ]
   }'
 ```
 
@@ -83,17 +102,22 @@ curl -X POST http://localhost:3000/api/v1/emails \
 }
 ```
 
+### 📎 Attachments
+SMTP Forge supports sending attachments by providing a public URL. The worker will download the file, verify its size, and attach it to the email.
+- **Max File Size**: 50MB per file.
+- **Method**: Provide a JSON array of objects with `filename` and `url`.
+- **Cleanup**: Temporary files are automatically purged from the worker node after delivery.
+
 ---
 
 ## 🗺️ Future Roadmap & Enhancements
 
-- [ ] **Email Templates**: Create and manage Handlebars/Liquid templates via the dashboard.
 - [ ] **Webhooks**: Receive POST notifications when an email is successfully sent or fails.
-- [ ] **Analytics Dashboard**: Visual charts for delivery success rates and latency.
-- [ ] **Attachments Support**: Upload and send files via the API.
-- [ ] **Rate Limiting**: Per-key and per-SMTP account throughput control.
+- [x] **Analytics Dashboard**: Visual charts for delivery success rates and latency.
+- [x] **Attachments Support**: Upload and send files via the API.
+- [x] **Rate Limiting**: Per-key and per-SMTP account throughput control.
 - [ ] **Multi-Admin Support**: Manage multiple admin users with different permission levels.
-- [ ] **JWT Authentication**: Transition from static tokens to signed JWTs for improved security.
+- [x] **JWT Authentication**: Transition from static tokens to signed JWTs for improved security.
 
 ---
 

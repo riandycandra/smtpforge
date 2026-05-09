@@ -5,8 +5,8 @@ import os from 'os';
 import { v4 as uuidv4 } from 'uuid';
 import { EmailAttachment } from '@mailer/shared';
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-const DOWNLOAD_TIMEOUT = 15000; // 15 seconds
+const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+const DOWNLOAD_TIMEOUT = 60000; // 60 seconds
 
 export interface DownloadedAttachment {
   filename: string;
@@ -31,6 +31,9 @@ export async function downloadAttachments(attachments: EmailAttachment[]): Promi
         responseType: 'arraybuffer',
         timeout: DOWNLOAD_TIMEOUT,
         maxContentLength: MAX_FILE_SIZE,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        },
       });
 
       const contentTypeHeader = response.headers['content-type'];
