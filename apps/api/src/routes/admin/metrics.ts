@@ -31,4 +31,14 @@ router.get('/workers', async (req: Request, res: Response, next: NextFunction) =
   }
 });
 
+router.get('/timeseries', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const precision = (req.query.precision as any) || 'day';
+    const stats = await metricsService.getTimeSeriesMetrics(precision);
+    return sendSuccess(res, stats);
+  } catch (error) {
+    next(error);
+  }
+});
+
 export const adminMetricsRouter = router;

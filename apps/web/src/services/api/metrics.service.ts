@@ -12,4 +12,8 @@ export const MetricsService = {
   async getWorkerStats() {
     return apiClient.get('/admin/metrics/workers');
   },
+
+  async getTimeSeries(precision: string = 'day') {
+    return apiClient.get(`/admin/metrics/timeseries?precision=${precision}`);
+  },
 };

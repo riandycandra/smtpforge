@@ -113,3 +113,38 @@ export async function getWorkerStats() {
     }))
   };
 }
+export async function getTimeSeriesMetrics(precision: 'day' | 'month' | 'year' = 'day') {
+  const stats = await EmailJob.findAll({
+    attributes: [
+      [fn('date_trunc', precision, col('created_at')), 'time'],
+      'status',
+      [fn('COUNT', col('id')), 'count'],
+    ],
+    where: {
+      status: {
+        [Op.in]: [EMAIL_STATUS.SENT, EMAIL_STATUS.FAILED]
+      }
+    },
+    group: [fn('date_trunc', precision, col('created_at')), 'status'],
+    order: [[fn('date_trunc', precision, col('created_at')), 'ASC']],
+    raw: true,
+  }) as any[];
+
+  // Format data for the chart
+  const dataMap: Record<string, any> = {};
+  stats.forEach((stat) => {
+    const time = stat.time; // stat.time is already a Date object or string from date_trunc
+    const timeStr = new Date(time).toISOString();
+    if (!dataMap[timeStr]) {
+      dataMap[timeStr] = { time: timeStr, success: 0, failed: 0 };
+    }
+    const count = parseInt(stat.count, 10);
+    if (stat.status === EMAIL_STATUS.SENT) {
+      dataMap[timeStr].success = count;
+    } else if (stat.status === EMAIL_STATUS.FAILED) {
+      dataMap[timeStr].failed = count;
+    }
+  });
+
+  return Object.values(dataMap);
+}
