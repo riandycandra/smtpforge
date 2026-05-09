@@ -8,4 +8,8 @@ export const MetricsService = {
   async getPlatformMetrics() {
     return apiClient.get('/admin/metrics/platform');
   },
+
+  async getWorkerStats() {
+    return apiClient.get('/admin/metrics/workers');
+  },
 };

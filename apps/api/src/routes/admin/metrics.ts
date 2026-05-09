@@ -22,4 +22,13 @@ router.get('/platform', async (req: Request, res: Response, next: NextFunction) 
   }
 });
 
+router.get('/workers', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const stats = await metricsService.getWorkerStats();
+    return sendSuccess(res, stats);
+  } catch (error) {
+    next(error);
+  }
+});
+
 export const adminMetricsRouter = router;

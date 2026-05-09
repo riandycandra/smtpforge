@@ -101,3 +101,15 @@ export async function getPlatformMetrics() {
     avgLatency: avgLatency + 'ms',
   };
 }
+export async function getWorkerStats() {
+  const workers = await emailQueue.getWorkers();
+  return {
+    count: workers.length,
+    status: workers.length > 0 ? 'active' : 'inactive',
+    workers: workers.map(w => ({
+      id: w.id,
+      name: w.name,
+      concurrency: (w as any).concurrency, // Some internal props might be useful
+    }))
+  };
+}
