@@ -74,8 +74,8 @@ adminAuthRouter.post('/login', async (req, res) => {
         username: user.username,
         roles: ['admin'],
       },
-      jwtSecret,
-      { expiresIn: env.JWT_EXPIRY || '24h' }
+      jwtSecret as string,
+      { expiresIn: (env.JWT_EXPIRY || '24h') as jwt.SignOptions['expiresIn'] }
     );
 
     return sendSuccess(res, {
@@ -138,8 +138,8 @@ adminAuthRouter.post('/change-password', requireAdminAuth, async (req, res) => {
         username: user.username,
         roles: ['admin'],
       },
-      jwtSecret,
-      { expiresIn: env.JWT_EXPIRY || '24h' }
+      jwtSecret as string,
+      { expiresIn: (env.JWT_EXPIRY || '24h') as jwt.SignOptions['expiresIn'] }
     );
 
     return sendSuccess(res, {
