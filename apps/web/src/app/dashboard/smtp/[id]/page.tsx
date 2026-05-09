@@ -139,23 +139,23 @@ export default function EditSmtpPage() {
   };
 
   if (loading) {
-    return <div className="p-8 text-center text-gray-500">Loading...</div>;
+    return <div className="p-8 text-center text-gray-500 dark:text-gray-400">Loading...</div>;
   }
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 mb-12">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center">
-          <Link href="/dashboard/smtp" className="mr-4 p-2 rounded-full hover:bg-gray-200 text-gray-500">
+          <Link href="/dashboard/smtp" className="mr-4 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400">
             <ArrowLeft className="w-5 h-5" />
           </Link>
-          <h1 className="text-2xl font-semibold text-gray-900">Manage SMTP Account</h1>
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Manage SMTP Account</h1>
         </div>
         <div className="flex space-x-3">
           <button
             onClick={handleTestConnection}
             disabled={testingConnection}
-            className="flex items-center px-4 py-2 border border-blue-600 text-blue-600 rounded hover:bg-blue-50 text-sm font-medium disabled:opacity-50"
+            className="flex items-center px-4 py-2 border border-blue-600 dark:border-blue-500 text-blue-600 dark:text-blue-400 rounded hover:bg-blue-50 dark:hover:bg-blue-950 text-sm font-medium disabled:opacity-50"
           >
             <Plug className="w-4 h-4 mr-2" />
             {testingConnection ? 'Testing...' : 'Test Connection'}
@@ -163,7 +163,7 @@ export default function EditSmtpPage() {
           <button
             onClick={handleDelete}
             disabled={deleting}
-            className="flex items-center px-4 py-2 border border-red-600 text-red-600 rounded hover:bg-red-50 text-sm font-medium disabled:opacity-50"
+            className="flex items-center px-4 py-2 border border-red-600 dark:border-red-500 text-red-600 dark:text-red-400 rounded hover:bg-red-50 dark:hover:bg-red-950 text-sm font-medium disabled:opacity-50"
           >
             <Trash2 className="w-4 h-4 mr-2" />
             Delete
@@ -171,14 +171,14 @@ export default function EditSmtpPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+      <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 shadow-sm p-6">
         {error && (
-          <div className="mb-6 p-4 bg-red-50 text-red-700 rounded border border-red-200 text-sm">
+          <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 rounded border border-red-200 dark:border-red-900 text-sm">
             {error}
           </div>
         )}
         {success && (
-          <div className="mb-6 p-4 bg-green-50 text-green-700 rounded border border-green-200 text-sm">
+          <div className="mb-6 p-4 bg-green-50 dark:bg-green-950/50 text-green-700 dark:text-green-400 rounded border border-green-200 dark:border-green-900 text-sm">
             {success}
           </div>
         )}
@@ -186,122 +186,122 @@ export default function EditSmtpPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Account Name</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Account Name</label>
               <input
                 {...register('name')}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               />
-              {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message?.toString()}</p>}
+              {errors.name && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name.message?.toString()}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Host</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Host</label>
               <input
                 {...register('host')}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               />
-              {errors.host && <p className="mt-1 text-sm text-red-600">{errors.host.message?.toString()}</p>}
+              {errors.host && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.host.message?.toString()}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Port</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Port</label>
               <input
                 type="number"
                 {...register('port')}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               />
-              {errors.port && <p className="mt-1 text-sm text-red-600">{errors.port.message?.toString()}</p>}
+              {errors.port && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.port.message?.toString()}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Username</label>
               <input
                 {...register('username')}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               />
-              {errors.username && <p className="mt-1 text-sm text-red-600">{errors.username.message?.toString()}</p>}
+              {errors.username && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.username.message?.toString()}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
               <input
                 type="password"
                 {...register('password')}
                 placeholder="Leave blank to keep unchanged"
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               />
-              {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password.message?.toString()}</p>}
+              {errors.password && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.password.message?.toString()}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">From Email</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">From Email</label>
               <input
                 {...register('from_email')}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               />
-              {errors.from_email && <p className="mt-1 text-sm text-red-600">{errors.from_email.message?.toString()}</p>}
+              {errors.from_email && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.from_email.message?.toString()}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">From Name (Optional)</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">From Name (Optional)</label>
               <input
                 {...register('from_name')}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Retry Attempts</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Retry Attempts</label>
               <input
                 type="number"
                 {...register('retry_attempts')}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Rate Limit / Hour (Optional)</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rate Limit / Hour (Optional)</label>
               <input
                 type="number"
                 {...register('rate_limit_per_hour')}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               />
             </div>
 
-            <div className="flex items-center space-x-6 col-span-2 pt-2 border-t border-gray-100">
+            <div className="flex items-center space-x-6 col-span-2 pt-2 border-t border-gray-100 dark:border-gray-800">
               <label className="flex items-center">
                 <input
                   type="checkbox"
                   {...register('secure')}
-                  className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                  className="rounded border-gray-300 dark:border-gray-600 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                 />
-                <span className="ml-2 text-sm text-gray-700">Use SSL/TLS (Secure)</span>
+                <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Use SSL/TLS (Secure)</span>
               </label>
 
               <label className="flex items-center">
                 <input
                   type="checkbox"
                   {...register('is_active')}
-                  className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                  className="rounded border-gray-300 dark:border-gray-600 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                 />
-                <span className="ml-2 text-sm text-gray-700">Active</span>
+                <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Active</span>
               </label>
 
               <label className="flex items-center">
                 <input
                   type="checkbox"
                   {...register('ignore_tls_errors')}
-                  className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                  className="rounded border-gray-300 dark:border-gray-600 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                 />
-                <span className="ml-2 text-sm text-gray-700">Allow self-signed certificates (Ignore TLS errors)</span>
+                <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Allow self-signed certificates (Ignore TLS errors)</span>
               </label>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-gray-200 flex justify-end mt-8">
+          <div className="pt-4 border-t border-gray-200 dark:border-gray-800 flex justify-end mt-8">
             <Link
               href="/dashboard/smtp"
-              className="px-4 py-2 border border-gray-300 rounded shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 mr-3"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 mr-3"
             >
               Cancel
             </Link>

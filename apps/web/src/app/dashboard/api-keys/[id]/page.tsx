@@ -146,7 +146,7 @@ export default function EditApiKeyPage() {
   };
 
   if (loading) {
-    return <div className="p-8 text-center text-gray-500">Loading...</div>;
+    return <div className="p-8 text-center text-gray-500 dark:text-gray-400">Loading...</div>;
   }
 
   // Filter out SMTP accounts already assigned
@@ -156,15 +156,15 @@ export default function EditApiKeyPage() {
     <div className="max-w-4xl mx-auto space-y-6 mb-12">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center">
-          <Link href="/dashboard/api-keys" className="mr-4 p-2 rounded-full hover:bg-gray-200 text-gray-500">
+          <Link href="/dashboard/api-keys" className="mr-4 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400">
             <ArrowLeft className="w-5 h-5" />
           </Link>
-          <h1 className="text-2xl font-semibold text-gray-900">Manage API Key</h1>
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Manage API Key</h1>
         </div>
         <button
           onClick={handleDelete}
           disabled={deleting}
-          className="flex items-center px-4 py-2 border border-red-600 text-red-600 rounded hover:bg-red-50 text-sm font-medium disabled:opacity-50"
+          className="flex items-center px-4 py-2 border border-red-600 dark:border-red-500 text-red-600 dark:text-red-400 rounded hover:bg-red-50 dark:hover:bg-red-950 text-sm font-medium disabled:opacity-50"
         >
           <Trash2 className="w-4 h-4 mr-2" />
           Delete Key
@@ -172,12 +172,12 @@ export default function EditApiKeyPage() {
       </div>
 
       {error && (
-        <div className="p-4 bg-red-50 text-red-700 rounded border border-red-200 text-sm">
+        <div className="p-4 bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 rounded border border-red-200 dark:border-red-900 text-sm">
           {error}
         </div>
       )}
       {success && (
-        <div className="p-4 bg-green-50 text-green-700 rounded border border-green-200 text-sm">
+        <div className="p-4 bg-green-50 dark:bg-green-950/50 text-green-700 dark:text-green-400 rounded border border-green-200 dark:border-green-900 text-sm">
           {success}
         </div>
       )}
@@ -185,27 +185,27 @@ export default function EditApiKeyPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* API Key Settings */}
         <div className="md:col-span-1 space-y-6">
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Settings</h2>
+          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 shadow-sm p-6">
+            <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Settings</h2>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Key Name</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Key Name</label>
                 <input
                   {...register('name')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 />
-                {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message?.toString()}</p>}
+                {errors.name && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name.message?.toString()}</p>}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Rate Limit per Hour</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rate Limit per Hour</label>
                 <input
                   type="number"
                   {...register('rate_limit_per_hour')}
                   placeholder="Unlimited"
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 />
-                {errors.rate_limit_per_hour && <p className="mt-1 text-sm text-red-600">{errors.rate_limit_per_hour.message?.toString()}</p>}
+                {errors.rate_limit_per_hour && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.rate_limit_per_hour.message?.toString()}</p>}
               </div>
 
               <div className="pt-2">
@@ -213,13 +213,13 @@ export default function EditApiKeyPage() {
                   <input
                     type="checkbox"
                     {...register('is_active')}
-                    className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                    className="rounded border-gray-300 dark:border-gray-600 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                   />
-                  <span className="ml-2 text-sm text-gray-700">Active</span>
+                  <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Active</span>
                 </label>
               </div>
 
-              <div className="pt-4 mt-4 border-t border-gray-200">
+              <div className="pt-4 mt-4 border-t border-gray-200 dark:border-gray-800">
                 <button
                   type="submit"
                   disabled={isSubmitting}
@@ -234,12 +234,12 @@ export default function EditApiKeyPage() {
 
         {/* Permissions */}
         <div className="md:col-span-2 space-y-6">
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 shadow-sm p-6">
             <div className="flex items-center mb-4">
-              <Shield className="w-5 h-5 text-gray-400 mr-2" />
-              <h2 className="text-lg font-medium text-gray-900">SMTP Account Permissions</h2>
+              <Shield className="w-5 h-5 text-gray-400 dark:text-gray-500 mr-2" />
+              <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">SMTP Account Permissions</h2>
             </div>
-            <p className="text-sm text-gray-500 mb-6">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
               API Keys can only send emails through SMTP accounts they have been granted access to.
             </p>
 
@@ -247,7 +247,7 @@ export default function EditApiKeyPage() {
               <select
                 value={selectedSmtp}
                 onChange={(e) => setSelectedSmtp(e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-700 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               >
                 <option value="">Select an SMTP Account to grant access...</option>
                 {availableSmtp.map(smtp => (
@@ -264,35 +264,35 @@ export default function EditApiKeyPage() {
               </button>
             </div>
 
-            <div className="bg-gray-50 rounded border border-gray-200 overflow-hidden">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-100">
+            <div className="bg-gray-50 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 overflow-hidden">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead className="bg-gray-100 dark:bg-gray-800/80">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Account Name</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned At</th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Account Name</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Assigned At</th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
                   {permissions.length === 0 ? (
                     <tr>
-                      <td colSpan={3} className="px-4 py-6 text-center text-sm text-gray-500">
+                      <td colSpan={3} className="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">
                         No SMTP permissions granted. This key cannot send emails.
                       </td>
                     </tr>
                   ) : (
                     permissions.map((perm) => (
                       <tr key={perm.id}>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                           {perm.SmtpAccount?.name || 'Unknown Account'}
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                           {new Date(perm.created_at).toLocaleDateString()}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
                           <button
                             onClick={() => handleRemovePermission(perm.smtp_account_id)}
-                            className="text-red-600 hover:text-red-900 flex items-center justify-end w-full"
+                            className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 flex items-center justify-end w-full"
                           >
                             <X className="w-4 h-4" />
                           </button>

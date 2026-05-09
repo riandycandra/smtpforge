@@ -50,30 +50,30 @@ export default function NewApiKeyPage() {
   if (createdKey) {
     return (
       <div className="max-w-2xl mx-auto mt-8">
-        <div className="bg-white p-8 rounded-lg border border-gray-200 shadow-sm text-center">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Check className="w-8 h-8 text-green-600" />
+        <div className="bg-white dark:bg-gray-900 p-8 rounded-lg border border-gray-200 dark:border-gray-800 shadow-sm text-center">
+          <div className="w-16 h-16 bg-green-100 dark:bg-green-950 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Check className="w-8 h-8 text-green-600 dark:text-green-400" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">API Key Created Successfully</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">API Key Created Successfully</h2>
 
-          <div className="bg-yellow-50 border border-yellow-200 rounded p-4 my-6 flex items-start text-left">
-            <AlertTriangle className="w-5 h-5 text-yellow-600 mr-3 flex-shrink-0 mt-0.5" />
+          <div className="bg-yellow-50 dark:bg-yellow-950/50 border border-yellow-200 dark:border-yellow-800 rounded p-4 my-6 flex items-start text-left">
+            <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mr-3 flex-shrink-0 mt-0.5" />
             <div>
-              <h4 className="text-sm font-bold text-yellow-800">Important: Save this key now!</h4>
-              <p className="text-sm text-yellow-700 mt-1">
+              <h4 className="text-sm font-bold text-yellow-800 dark:text-yellow-300">Important: Save this key now!</h4>
+              <p className="text-sm text-yellow-700 dark:text-yellow-400 mt-1">
                 For security reasons, this API key will <strong>only be shown once</strong>.
                 You will not be able to view it again after leaving this page.
               </p>
             </div>
           </div>
 
-          <div className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded p-4 mb-8">
-            <code className="text-gray-900 font-mono text-lg break-all mr-4">{createdKey.api_key}</code>
+          <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded p-4 mb-8">
+            <code className="text-gray-900 dark:text-gray-100 font-mono text-lg break-all mr-4">{createdKey.api_key}</code>
             <button
               onClick={handleCopy}
-              className="flex items-center px-4 py-2 bg-white border border-gray-300 rounded shadow-sm hover:bg-gray-50 text-sm font-medium text-gray-600"
+              className="flex items-center px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 text-sm font-medium text-gray-600 dark:text-gray-300"
             >
-              {copied ? <Check className="w-4 h-4 mr-2 text-green-600" /> : <Copy className="w-4 h-4 mr-2 text-gray-600" />}
+              {copied ? <Check className="w-4 h-4 mr-2 text-green-600 dark:text-green-400" /> : <Copy className="w-4 h-4 mr-2 text-gray-600 dark:text-gray-400" />}
               {copied ? 'Copied' : 'Copy'}
             </button>
           </div>
@@ -92,45 +92,45 @@ export default function NewApiKeyPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="flex items-center mb-6">
-        <Link href="/dashboard/api-keys" className="mr-4 p-2 rounded-full hover:bg-gray-200 text-gray-500">
+        <Link href="/dashboard/api-keys" className="mr-4 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400">
           <ArrowLeft className="w-5 h-5" />
         </Link>
-        <h1 className="text-2xl font-semibold text-gray-900">Create New API Key</h1>
+        <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Create New API Key</h1>
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+      <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 shadow-sm p-6">
         {error && (
-          <div className="mb-6 p-4 bg-red-50 text-red-700 rounded border border-red-200 text-sm">
+          <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 rounded border border-red-200 dark:border-red-900 text-sm">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Key Name</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Key Name</label>
             <input
               {...register('name')}
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               placeholder="e.g. Production Backend"
             />
-            {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message?.toString()}</p>}
+            {errors.name && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name.message?.toString()}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Rate Limit per Hour (Optional)</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rate Limit per Hour (Optional)</label>
             <input
               type="number"
               {...register('rate_limit_per_hour')}
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               placeholder="Leave empty for unlimited"
             />
-            {errors.rate_limit_per_hour && <p className="mt-1 text-sm text-red-600">{errors.rate_limit_per_hour.message?.toString()}</p>}
+            {errors.rate_limit_per_hour && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.rate_limit_per_hour.message?.toString()}</p>}
           </div>
 
-          <div className="pt-4 border-t border-gray-200 flex justify-end">
+          <div className="pt-4 border-t border-gray-200 dark:border-gray-800 flex justify-end">
             <Link
               href="/dashboard/api-keys"
-              className="px-4 py-2 border border-gray-300 rounded shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 mr-3"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 mr-3"
             >
               Cancel
             </Link>

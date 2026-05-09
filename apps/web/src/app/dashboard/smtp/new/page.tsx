@@ -59,15 +59,15 @@ export default function NewSmtpPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-6 mb-12">
       <div className="flex items-center mb-6">
-        <Link href="/dashboard/smtp" className="mr-4 p-2 rounded-full hover:bg-gray-200 text-gray-500">
+        <Link href="/dashboard/smtp" className="mr-4 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400">
           <ArrowLeft className="w-5 h-5" />
         </Link>
-        <h1 className="text-2xl font-semibold text-gray-900">Add SMTP Account</h1>
+        <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Add SMTP Account</h1>
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+      <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 shadow-sm p-6">
         {error && (
-          <div className="mb-6 p-4 bg-red-50 text-red-700 rounded border border-red-200 text-sm">
+          <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 rounded border border-red-200 dark:border-red-900 text-sm">
             {error}
           </div>
         )}
@@ -75,125 +75,125 @@ export default function NewSmtpPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Account Name</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Account Name</label>
               <input
                 {...register('name')}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 placeholder="e.g. Transactional Primary"
               />
-              {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message?.toString()}</p>}
+              {errors.name && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name.message?.toString()}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Host</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Host</label>
               <input
                 {...register('host')}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 placeholder="smtp.example.com"
               />
-              {errors.host && <p className="mt-1 text-sm text-red-600">{errors.host.message?.toString()}</p>}
+              {errors.host && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.host.message?.toString()}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Port</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Port</label>
               <input
                 type="number"
                 {...register('port')}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               />
-              {errors.port && <p className="mt-1 text-sm text-red-600">{errors.port.message?.toString()}</p>}
+              {errors.port && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.port.message?.toString()}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Username</label>
               <input
                 {...register('username')}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               />
-              {errors.username && <p className="mt-1 text-sm text-red-600">{errors.username.message?.toString()}</p>}
+              {errors.username && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.username.message?.toString()}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
               <input
                 type="password"
                 {...register('password')}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               />
-              {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password.message?.toString()}</p>}
+              {errors.password && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.password.message?.toString()}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">From Email</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">From Email</label>
               <input
                 {...register('from_email')}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 placeholder="noreply@example.com"
               />
-              {errors.from_email && <p className="mt-1 text-sm text-red-600">{errors.from_email.message?.toString()}</p>}
+              {errors.from_email && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.from_email.message?.toString()}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">From Name (Optional)</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">From Name (Optional)</label>
               <input
                 {...register('from_name')}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 placeholder="Example Inc."
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Retry Attempts</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Retry Attempts</label>
               <input
                 type="number"
                 {...register('retry_attempts')}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Rate Limit / Hour (Optional)</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rate Limit / Hour (Optional)</label>
               <input
                 type="number"
                 {...register('rate_limit_per_hour')}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               />
             </div>
 
-            <div className="flex items-center space-x-6 col-span-2 pt-2 border-t border-gray-100">
+            <div className="flex items-center space-x-6 col-span-2 pt-2 border-t border-gray-100 dark:border-gray-800">
               <label className="flex items-center">
                 <input
                   type="checkbox"
                   {...register('secure')}
-                  className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                  className="rounded border-gray-300 dark:border-gray-600 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                 />
-                <span className="ml-2 text-sm text-gray-700">Use SSL/TLS (Secure)</span>
+                <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Use SSL/TLS (Secure)</span>
               </label>
 
               <label className="flex items-center">
                 <input
                   type="checkbox"
                   {...register('is_active')}
-                  className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                  className="rounded border-gray-300 dark:border-gray-600 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                 />
-                <span className="ml-2 text-sm text-gray-700">Set Active immediately</span>
+                <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Set Active immediately</span>
               </label>
 
               <label className="flex items-center">
                 <input
                   type="checkbox"
                   {...register('ignore_tls_errors')}
-                  className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                  className="rounded border-gray-300 dark:border-gray-600 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                 />
-                <span className="ml-2 text-sm text-gray-700">Allow self-signed certificates (Ignore TLS errors)</span>
+                <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Allow self-signed certificates (Ignore TLS errors)</span>
               </label>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-gray-200 flex justify-end mt-8">
+          <div className="pt-4 border-t border-gray-200 dark:border-gray-800 flex justify-end mt-8">
             <Link
               href="/dashboard/smtp"
-              className="px-4 py-2 border border-gray-300 rounded shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 mr-3"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 mr-3"
             >
               Cancel
             </Link>
