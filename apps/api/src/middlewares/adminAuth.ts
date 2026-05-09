@@ -23,7 +23,7 @@ export async function requireAdminAuth(req: Request, res: Response, next: NextFu
   }
 
   try {
-    const jwtSecret = env.JWT_SECRET;
+    const jwtSecret = (env.JWT_SECRET || process.env.JWT_SECRET || 'dev-jwt-secret-change-in-production') as string;
     const decoded = jwt.verify(token, jwtSecret) as JwtPayload;
 
     req.adminAuth = {

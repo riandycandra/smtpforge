@@ -25,9 +25,23 @@ export async function seedDefaultAdmin(): Promise<void> {
       password_hash: hash,
       must_change_password: true,
     });
-    console.log('[AUTH] Default admin user created (admin/admin). Password change will be required on first login.');
   }
 }
+
+/**
+ * GET /api/v1/admin/auth/status
+ * Public endpoint to check if the system is in its default setup state.
+ */
+adminAuthRouter.get('/status', async (req, res) => {
+  try {
+    const defaultAdmin = await AdminUser.findOne({ where: { username: DEFAULT_USERNAME } });
+    return sendSuccess(res, {
+      isDefaultState: !!(defaultAdmin && defaultAdmin.must_change_password),
+    });
+  } catch (error) {
+    return sendSuccess(res, { isDefaultState: false });
+  }
+});
 
 /**
  * POST /api/v1/admin/auth/login
@@ -52,9 +66,6 @@ adminAuthRouter.post('/login', async (req, res) => {
       return sendError(res, 'Invalid username or password', [], 401);
     }
 
-    console.log('[DEBUG] Full env object:', JSON.stringify(env, null, 2));
-    console.log('[DEBUG] process.env.JWT_SECRET:', process.env.JWT_SECRET);
-    
     const jwtSecret = env.JWT_SECRET || process.env.JWT_SECRET || 'dev-jwt-secret-change-in-production';
     
     const token = jwt.sign(

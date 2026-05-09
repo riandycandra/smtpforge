@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthService } from '@/services/api/auth.service';
 
@@ -10,6 +10,22 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isDefaultState, setIsDefaultState] = useState(false);
+
+  useEffect(() => {
+    // Check if we should show the default credentials hint
+    const checkStatus = async () => {
+      try {
+        const res: any = await AuthService.getStatus();
+        if (res.success) {
+          setIsDefaultState(res.data.isDefaultState);
+        }
+      } catch (err) {
+        // Silently ignore status check errors
+      }
+    };
+    checkStatus();
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,9 +110,11 @@ export default function LoginPage() {
           </button>
         </form>
         
-        <div className="mt-8 text-center text-xs text-gray-400">
-          Default credentials: admin / admin
-        </div>
+        {isDefaultState && (
+          <div className="mt-8 text-center text-xs text-gray-400">
+            Default credentials: admin / admin
+          </div>
+        )}
       </div>
     </div>
   );

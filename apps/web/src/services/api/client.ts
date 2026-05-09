@@ -28,7 +28,10 @@ apiClient.interceptors.response.use(
   (error) => {
     // If auth fails, maybe redirect to login
     if (error.response?.status === 401 && typeof window !== 'undefined') {
-      window.location.href = '/login';
+      const isLoginPage = window.location.pathname === '/login';
+      if (!isLoginPage) {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error.response?.data || error.message);
   }

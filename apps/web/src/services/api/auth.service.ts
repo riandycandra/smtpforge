@@ -5,6 +5,10 @@ export const AuthService = {
     return apiClient.post('/admin/auth/login', credentials);
   },
 
+  async getStatus() {
+    return apiClient.get('/admin/auth/status');
+  },
+
   async changePassword(data: { current_password: string; new_password: string }) {
     return apiClient.post('/admin/auth/change-password', data);
   },
