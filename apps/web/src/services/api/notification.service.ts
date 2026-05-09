@@ -4,7 +4,10 @@ export interface NotificationConfig {
   id: string;
   name: string;
   type: string;
-  config: any;
+  config: {
+    webhookUrl?: string;
+    [key: string]: string | number | boolean | undefined | null | Record<string, unknown>;
+  };
   is_enabled: boolean;
   last_status: string;
   last_checked_at: string | null;
@@ -13,23 +16,27 @@ export interface NotificationConfig {
 }
 
 export const NotificationService = {
-  getAll: async () => {
-    return apiClient.get<NotificationConfig[]>('/admin/notifications');
+  getAll: async (): Promise<NotificationConfig[]> => {
+    const response = await apiClient.get<NotificationConfig[]>('/admin/notifications');
+    return (response as unknown) as NotificationConfig[];
   },
 
-  create: async (data: Partial<NotificationConfig>) => {
-    return apiClient.post<NotificationConfig>('/admin/notifications', data);
+  create: async (data: Partial<NotificationConfig>): Promise<NotificationConfig> => {
+    const response = await apiClient.post<NotificationConfig>('/admin/notifications', data);
+    return (response as unknown) as NotificationConfig;
   },
 
-  update: async (id: string, data: Partial<NotificationConfig>) => {
-    return apiClient.patch<NotificationConfig>(`/admin/notifications/${id}`, data);
+  update: async (id: string, data: Partial<NotificationConfig>): Promise<NotificationConfig> => {
+    const response = await apiClient.patch<NotificationConfig>(`/admin/notifications/${id}`, data);
+    return (response as unknown) as NotificationConfig;
   },
 
-  delete: async (id: string) => {
-    return apiClient.delete(`/admin/notifications/${id}`);
+  delete: async (id: string): Promise<void> => {
+    await apiClient.delete(`/admin/notifications/${id}`);
   },
 
-  test: async (id: string) => {
-    return apiClient.post(`/admin/notifications/${id}/test`);
+  test: async (id: string): Promise<{ message: string }> => {
+    const response = await apiClient.post<{ message: string }>(`/admin/notifications/${id}/test`);
+    return (response as unknown) as { message: string };
   }
 };

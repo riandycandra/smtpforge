@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { NotificationService, NotificationConfig } from '@/services/api/notification.service';
 import { Bell, Plus, CheckCircle, XCircle, Trash2, Edit2, ExternalLink, Send } from 'lucide-react';
 import { toast } from 'react-hot-toast';
@@ -17,11 +17,7 @@ export default function NotificationsPage() {
   const [webhookUrl, setWebhookUrl] = useState('');
   const [isEnabled, setIsEnabled] = useState(true);
 
-  useEffect(() => {
-    loadConfigs();
-  }, []);
-
-  const loadConfigs = async () => {
+  const loadConfigs = useCallback(async () => {
     try {
       const data = await NotificationService.getAll();
       setConfigs(data);
@@ -31,7 +27,16 @@ export default function NotificationsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetch = async () => {
+      await loadConfigs();
+    };
+    fetch();
+    return () => { isMounted = false; };
+  }, [loadConfigs]);
 
   const resetForm = () => {
     setName('');
