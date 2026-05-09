@@ -59,8 +59,10 @@ const formatDate = (dateStr: string) => {
 };
 
 export default function LogsDashboardPage() {
+  const PAGE_SIZE = 10;
   const [logs, setLogs] = useState<EmailLog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState('');
   const [search, setSearch] = useState('');
@@ -75,12 +77,13 @@ export default function LogsDashboardPage() {
       try {
         const res = await LogsService.getLogs({
           page,
-          limit: 20,
+          limit: PAGE_SIZE,
           status: statusFilter,
           subject: search,
-        }) as unknown as { success: boolean; data: { data: EmailLog[] } };
+        }) as unknown as { success: boolean; data: { data: EmailLog[]; meta: { total: number } } };
         if (!cancelled && res.success) {
           setLogs(res.data?.data || []);
+          setTotal(res.data?.meta?.total || 0);
         }
       } catch (err) {
         if (!cancelled) console.error(err);
@@ -98,12 +101,13 @@ export default function LogsDashboardPage() {
     try {
       const res = await LogsService.getLogs({
         page,
-        limit: 20,
+        limit: PAGE_SIZE,
         status: statusFilter,
         subject: search,
-      }) as unknown as { success: boolean; data: { data: EmailLog[] } };
+      }) as unknown as { success: boolean; data: { data: EmailLog[]; meta: { total: number } } };
       if (res.success) {
         setLogs(res.data?.data || []);
+        setTotal(res.data?.meta?.total || 0);
       }
     } catch (err) {
       console.error(err);
@@ -257,7 +261,7 @@ export default function LogsDashboardPage() {
         {/* Pagination Footer */}
         <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30 flex items-center justify-between">
           <div className="text-sm text-gray-500 dark:text-gray-400">
-            Showing <span className="font-medium">{(page - 1) * 20 + 1}</span> to <span className="font-medium">{Math.min(page * 20, (page - 1) * 20 + logs.length)}</span> results
+            Showing <span className="font-medium">{(page - 1) * PAGE_SIZE + 1}</span> to <span className="font-medium">{Math.min(page * PAGE_SIZE, total)}</span> of <span className="font-medium">{total}</span> results
           </div>
           <div className="flex items-center gap-3">
             <button
@@ -272,7 +276,7 @@ export default function LogsDashboardPage() {
             </div>
             <button
               onClick={() => setPage(p => p + 1)}
-              disabled={logs.length < 20}
+              disabled={page * PAGE_SIZE >= total}
               className="px-3 py-1.5 text-sm font-medium border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
             >
               Next

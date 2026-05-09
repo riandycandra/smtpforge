@@ -6,7 +6,7 @@ export interface PaginationParams {
   page: number;
 }
 
-export function getPagination(req: Request, defaultLimit = 20): PaginationParams {
+export function getPagination(req: Request, defaultLimit = 10): PaginationParams {
   const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
   const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : defaultLimit;
   
