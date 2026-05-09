@@ -120,14 +120,21 @@ export default function LogsDashboardPage() {
     }
   }, [selectedLog]);
 
+  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 5000);
+  };
+
   const handleResend = async (id: string) => {
     try {
       await LogsService.resendLog(id);
-      alert('Email enqueued for resend!');
+      showNotification('Email successfully enqueued for resend.', 'success');
       void loadLogs();
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Unknown error';
-      alert(`Failed to resend: ${message}`);
+      showNotification(`Failed to resend: ${message}`, 'error');
     }
   };
 
@@ -391,6 +398,30 @@ export default function LogsDashboardPage() {
           </>
         )}
       </dialog>
+
+      {/* Toast Notification */}
+      {notification && (
+        <div className="fixed bottom-8 right-8 z-[100] animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <div className={`flex items-center gap-3 px-5 py-4 rounded-2xl shadow-2xl border ${
+            notification.type === 'success' 
+              ? 'bg-white dark:bg-gray-900 border-green-100 dark:border-green-900/50 text-green-800 dark:text-green-300' 
+              : 'bg-white dark:bg-gray-900 border-red-100 dark:border-red-900/50 text-red-800 dark:text-red-300'
+          }`}>
+            {notification.type === 'success' ? (
+              <CheckCircle className="w-5 h-5 text-green-500" />
+            ) : (
+              <AlertCircle className="w-5 h-5 text-red-500" />
+            )}
+            <p className="text-sm font-bold tracking-tight">{notification.message}</p>
+            <button 
+              onClick={() => setNotification(null)}
+              className="ml-4 p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+            >
+              <X className="w-4 h-4 text-gray-400" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
