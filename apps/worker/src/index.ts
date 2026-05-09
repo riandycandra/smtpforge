@@ -1,3 +1,4 @@
+import { env } from './config/env';
 import { createEmailWorker } from './workers/email.worker';
 import { redisClient } from './config/redis';
 import { connectDatabase } from '@mailer/database';
