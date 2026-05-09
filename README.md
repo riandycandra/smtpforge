@@ -102,6 +102,34 @@ curl -X POST http://localhost:3000/api/v1/emails \
 }
 ```
 
+### List SMTP Accounts
+**Endpoint**: `GET /api/v1/smtp-accounts`
+
+Returns a list of SMTP accounts that the current API key is authorized to use.
+
+**Example (Bash)**:
+```bash
+curl -X GET http://localhost:3000/api/v1/smtp-accounts \
+  -H "X-Mailer-Api-Key: your_key_here"
+```
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "uuid-1",
+      "name": "Marketing SMTP",
+      "host": "smtp.sendgrid.net",
+      "port": 587,
+      "from_email": "marketing@example.com",
+      "from_name": "Marketing Team"
+    }
+  ]
+}
+```
+
 ### 📎 Attachments
 SMTP Forge supports sending attachments by providing a public URL. The worker will download the file, verify its size, and attach it to the email.
 - **Max File Size**: 50MB per file.

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { publicEmailsRouter } from './public/emails';
+import { publicSmtpAccountsRouter } from './public/smtp-accounts';
 import { adminSmtpRouter } from './admin/smtp';
 import { adminApiKeysRouter } from './admin/api-keys';
 import { adminLogsRouter } from './admin/logs';
@@ -16,6 +17,7 @@ const publicApi = Router();
 publicApi.use(requireAppAuth);
 publicApi.use(appRateLimiter);
 publicApi.use('/emails', publicEmailsRouter);
+publicApi.use('/smtp-accounts', publicSmtpAccountsRouter);
 
 // Admin Auth (Publicly accessible for login)
 routes.use('/api/v1/admin/auth', adminAuthRouter);
