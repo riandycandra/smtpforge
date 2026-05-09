@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
-dotenv.config();
+import path from 'path';
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 function requireEnv(key: string): string {
   const value = process.env[key];
@@ -29,6 +30,8 @@ export const env = {
 
   // Security
   SMTP_ENCRYPTION_KEY: requireEnv('SMTP_ENCRYPTION_KEY'),
+  JWT_SECRET: process.env.JWT_SECRET || 'dev-jwt-secret-change-in-production',
+  JWT_EXPIRY: process.env.JWT_EXPIRY || '24h',
   
   // App specific limits
   MAX_ATTACHMENT_SIZE_MB: parseInt(process.env.MAX_ATTACHMENT_SIZE_MB || '10', 10),

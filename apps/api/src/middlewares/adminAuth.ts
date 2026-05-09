@@ -1,5 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
 import { sendError } from '../utils/response';
+import { env } from '../config/env';
+
+interface JwtPayload {
+  userId: string;
+  username: string;
+  roles: string[];
+}
 
 export async function requireAdminAuth(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
@@ -15,19 +23,12 @@ export async function requireAdminAuth(req: Request, res: Response, next: NextFu
   }
 
   try {
-    // Phase 3: Foundation only. Do NOT implement actual JWT validation yet.
-    // In the future:
-    // const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    
-    // For now, we simulate success if the token is "admin_token_placeholder" just to allow basic flow testing
-    // In production Phase X, replace with real JWT validation
-    if (token !== 'admin_token_placeholder' && process.env.NODE_ENV !== 'development') {
-        return sendError(res, 'Invalid token', [], 401);
-    }
+    const jwtSecret = env.JWT_SECRET;
+    const decoded = jwt.verify(token, jwtSecret) as JwtPayload;
 
     req.adminAuth = {
-      userId: 'placeholder-admin-id',
-      roles: ['admin'],
+      userId: decoded.userId,
+      roles: decoded.roles,
     };
 
     next();

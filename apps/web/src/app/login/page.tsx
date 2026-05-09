@@ -31,7 +31,12 @@ export default function LoginPage() {
         // Store in cookie for Next.js Middleware
         document.cookie = `admin_token=${token}; path=/; max-age=86400; SameSite=Lax`;
         
-        router.push('/dashboard');
+        // Check if user must change their password
+        if (res.data.must_change_password) {
+          router.push('/change-password');
+        } else {
+          router.push('/dashboard');
+        }
       } else {
         setError(res.message || 'Login failed');
       }

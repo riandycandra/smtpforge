@@ -3,11 +3,15 @@ import { app } from './app';
 import { connectDatabase } from '@mailer/database';
 import { redisClient } from './config/redis';
 import { logger } from './utils/logger';
+import { seedDefaultAdmin } from './routes/admin/auth';
 
 async function bootstrap() {
   try {
     // Establish connections
     await connectDatabase();
+    
+    // Seed default admin user if none exists
+    await seedDefaultAdmin();
     
     // Check Redis connection
     await redisClient.ping();

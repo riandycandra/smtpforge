@@ -2,6 +2,7 @@ import { SmtpAccount } from './SmtpAccount';
 import { ApiKey } from './ApiKey';
 import { ApiKeySmtpPermission } from './ApiKeySmtpPermission';
 import { EmailJob } from './EmailJob';
+import { AdminUser } from './AdminUser';
 
 // ApiKey <-> SmtpAccount (Many to Many)
 ApiKey.belongsToMany(SmtpAccount, {
@@ -45,4 +46,5 @@ export {
   ApiKey,
   ApiKeySmtpPermission,
   EmailJob,
+  AdminUser,
 };
