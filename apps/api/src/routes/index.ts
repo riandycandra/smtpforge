@@ -4,6 +4,7 @@ import { adminSmtpRouter } from './admin/smtp';
 import { adminApiKeysRouter } from './admin/api-keys';
 import { adminLogsRouter } from './admin/logs';
 import { adminAuthRouter } from './admin/auth';
+import { adminMetricsRouter } from './admin/metrics';
 import { requireAppAuth } from '../middlewares/appAuth';
 import { requireAdminAuth } from '../middlewares/adminAuth';
 import { appRateLimiter } from '../middlewares/rateLimiter';
@@ -25,6 +26,7 @@ adminApi.use(requireAdminAuth);
 adminApi.use('/smtp', adminSmtpRouter);
 adminApi.use('/api-keys', adminApiKeysRouter);
 adminApi.use('/logs', adminLogsRouter);
+adminApi.use('/metrics', adminMetricsRouter);
 
 // Mount namespaces
 routes.use('/api/v1/admin', adminApi);
