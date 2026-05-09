@@ -14,6 +14,7 @@
   "dependencies": {
     "@mailer/database": "workspace:*",
     "@mailer/shared": "workspace:*",
+    "axios": "^1.16.0",
     "bcrypt": "^6.0.0",
     "bullmq": "^5.4.2",
     "cors": "^2.8.6",

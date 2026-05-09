@@ -4,6 +4,7 @@ import { connectDatabase } from '@mailer/database';
 import { redisClient } from './config/redis';
 import { logger } from './utils/logger';
 import { seedDefaultAdmin } from './routes/admin/auth';
+import { startWorkerHealthCheck } from './jobs/workerHealthCheck';
 
 async function bootstrap() {
   try {
@@ -16,6 +17,9 @@ async function bootstrap() {
     // Check Redis connection
     await redisClient.ping();
     logger.info('Redis connection established successfully.');
+
+    // Start background jobs
+    startWorkerHealthCheck();
 
     // Start server
     app.listen(env.PORT, () => {

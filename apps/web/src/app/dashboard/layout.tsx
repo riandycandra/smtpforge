@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Mail, Key, Activity, Server, LayoutDashboard, LogOut, Settings as SettingsIcon, Sun, Moon } from 'lucide-react';
+import { Mail, Key, Activity, Server, LayoutDashboard, LogOut, Settings as SettingsIcon, Sun, Moon, Bell } from 'lucide-react';
 import { AuthService } from '@/services/api/auth.service';
 import { useTheme } from '../theme-provider';
 
@@ -13,6 +13,7 @@ const navigation = [
   { name: 'API Keys', href: '/dashboard/api-keys', icon: Key },
   { name: 'Email Logs', href: '/dashboard/logs', icon: Mail },
   { name: 'Metrics', href: '/dashboard/metrics', icon: Activity },
+  { name: 'Notifications', href: '/dashboard/notifications', icon: Bell },
   { name: 'Settings', href: '/dashboard/settings', icon: SettingsIcon },
 ];
 

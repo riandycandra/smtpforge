@@ -3,8 +3,10 @@ import { ApiKey } from './ApiKey';
 import { ApiKeySmtpPermission } from './ApiKeySmtpPermission';
 import { EmailJob } from './EmailJob';
 import { AdminUser } from './AdminUser';
+import { NotificationConfig } from './NotificationConfig';
 
 // ApiKey <-> SmtpAccount (Many to Many)
+// ... existing associations ...
 ApiKey.belongsToMany(SmtpAccount, {
   through: ApiKeySmtpPermission,
   foreignKey: 'api_key_id',
@@ -47,4 +49,5 @@ export {
   ApiKeySmtpPermission,
   EmailJob,
   AdminUser,
+  NotificationConfig,
 };
