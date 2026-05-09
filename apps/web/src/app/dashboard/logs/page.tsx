@@ -279,7 +279,7 @@ export default function LogsDashboardPage() {
         id="log-details-dialog"
         ref={dialogRef}
         onClose={() => setSelectedLog(null)}
-        className="m-auto rounded-3xl shadow-2xl w-full max-w-5xl h-[85vh] p-0 bg-white border-none overflow-hidden outline-none open:flex open:flex-col inset-ring inset-ring-gray-900/5"
+        className="m-auto rounded-2xl shadow-2xl w-full max-w-5xl h-[85vh] p-0 bg-white border-none overflow-hidden outline-none open:flex open:flex-col inset-ring inset-ring-gray-900/5"
       >
         {selectedLog && (
           <>
@@ -373,17 +373,6 @@ export default function LogsDashboardPage() {
                         </pre>
                       </div>
                     )}
-
-                    {/* Footer Close Button matching your requested style */}
-                    <div className="flex justify-end pt-2">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedLog(null)}
-                        className="inline-flex justify-center rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-colors active:scale-95"
-                      >
-                        Close Details
-                      </button>
-                    </div>
                   </div>
                 )}
               </div>
