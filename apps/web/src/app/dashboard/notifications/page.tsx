@@ -18,6 +18,12 @@ const channelDetails: Record<string, { namePlaceholder: string; webhookPlacehold
     helpHref: 'https://api.slack.com/messaging/webhooks',
     helpLabel: 'How to get a Slack webhook?',
   },
+  telegram: {
+    namePlaceholder: 'e.g. Telegram Ops Alerts',
+    webhookPlaceholder: '',
+    helpHref: 'https://core.telegram.org/bots/features#botfather',
+    helpLabel: 'How to create a Telegram bot?',
+  },
 };
 
 export default function NotificationsPage() {
@@ -30,6 +36,8 @@ export default function NotificationsPage() {
   const [name, setName] = useState('');
   const [type, setType] = useState('teams');
   const [webhookUrl, setWebhookUrl] = useState('');
+  const [botToken, setBotToken] = useState('');
+  const [chatId, setChatId] = useState('');
   const [isEnabled, setIsEnabled] = useState(true);
 
   const loadConfigs = useCallback(async () => {
@@ -55,8 +63,17 @@ export default function NotificationsPage() {
     setName('');
     setType('teams');
     setWebhookUrl('');
+    setBotToken('');
+    setChatId('');
     setIsEnabled(true);
     setEditingConfig(null);
+  };
+
+  const handleTypeChange = (nextType: string) => {
+    setType(nextType);
+    setWebhookUrl('');
+    setBotToken('');
+    setChatId('');
   };
 
   const handleOpenModal = (config?: NotificationConfig) => {
@@ -65,6 +82,8 @@ export default function NotificationsPage() {
       setName(config.name);
       setType(config.type);
       setWebhookUrl(config.config.webhookUrl || '');
+      setBotToken(config.config.botToken || '');
+      setChatId(config.config.chatId || '');
       setIsEnabled(config.is_enabled);
     } else {
       resetForm();
@@ -78,7 +97,7 @@ export default function NotificationsPage() {
       const payload = {
         name,
         type,
-        config: { webhookUrl },
+        config: type === 'telegram' ? { botToken, chatId } : { webhookUrl },
         is_enabled: isEnabled,
       };
 
@@ -258,30 +277,62 @@ export default function NotificationsPage() {
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Channel Type</label>
                 <select
                   value={type}
-                  onChange={(e) => setType(e.target.value)}
+                  onChange={(e) => handleTypeChange(e.target.value)}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                 >
                   <option value="teams">Microsoft Teams</option>
                   <option value="slack">Slack</option>
-                  <option value="telegram" disabled>Telegram (Coming Soon)</option>
+                  <option value="telegram">Telegram</option>
                 </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Webhook URL</label>
-                <input
-                  type="url"
-                  required
-                  value={webhookUrl}
-                  onChange={(e) => setWebhookUrl(e.target.value)}
-                  placeholder={selectedChannelDetails.webhookPlaceholder}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                />
-                <p className="mt-2 text-xs text-gray-500 flex items-center">
-                  <ExternalLink className="w-3 h-3 mr-1" />
-                  <a href={selectedChannelDetails.helpHref} target="_blank" rel="noreferrer" className="underline hover:text-blue-500">{selectedChannelDetails.helpLabel}</a>
-                </p>
-              </div>
+              {type === 'telegram' ? (
+                <>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Bot Token</label>
+                    <input
+                      type="password"
+                      required
+                      value={botToken}
+                      onChange={(e) => setBotToken(e.target.value)}
+                      placeholder="123456789:ABCDEF..."
+                      className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Chat ID</label>
+                    <input
+                      type="text"
+                      required
+                      value={chatId}
+                      onChange={(e) => setChatId(e.target.value)}
+                      placeholder="-1001234567890"
+                      className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                    />
+                    <p className="mt-2 text-xs text-gray-500 flex items-center">
+                      <ExternalLink className="w-3 h-3 mr-1" />
+                      <a href={selectedChannelDetails.helpHref} target="_blank" rel="noreferrer" className="underline hover:text-blue-500">{selectedChannelDetails.helpLabel}</a>
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Webhook URL</label>
+                  <input
+                    type="url"
+                    required
+                    value={webhookUrl}
+                    onChange={(e) => setWebhookUrl(e.target.value)}
+                    placeholder={selectedChannelDetails.webhookPlaceholder}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                  />
+                  <p className="mt-2 text-xs text-gray-500 flex items-center">
+                    <ExternalLink className="w-3 h-3 mr-1" />
+                    <a href={selectedChannelDetails.helpHref} target="_blank" rel="noreferrer" className="underline hover:text-blue-500">{selectedChannelDetails.helpLabel}</a>
+                  </p>
+                </div>
+              )}
 
               <div className="flex items-center space-x-2 pt-2">
                 <input

@@ -6,6 +6,8 @@ export interface NotificationConfig {
   type: string;
   config: {
     webhookUrl?: string;
+    botToken?: string;
+    chatId?: string;
     [key: string]: string | number | boolean | undefined | null | Record<string, unknown>;
   };
   is_enabled: boolean;

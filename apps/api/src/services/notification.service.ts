@@ -22,6 +22,30 @@ const formatTimestamp = () => new Date().toLocaleString();
 
 const toSlackMarkdown = (text: string) => text.replace(/\*\*(.*?)\*\*/g, '*$1*');
 
+const escapeTelegramHtml = (text: string) =>
+  text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+
+const toTelegramHtml = (text: string) =>
+  escapeTelegramHtml(text).replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+
+const formatTelegramMessage = (options: NotificationOptions) => {
+  const facts = [
+    ...(options.facts || []),
+    { title: 'Timestamp', value: formatTimestamp() },
+    { title: 'Platform', value: 'SMTP Forge' },
+  ];
+
+  const factLines = facts
+    .map((fact) => `<b>${escapeTelegramHtml(fact.title)}</b>\n${escapeTelegramHtml(fact.value)}`)
+    .join('\n\n');
+
+  return `<b>${escapeTelegramHtml(options.title)}</b>\n\n${toTelegramHtml(options.message)}\n\n${factLines}`;
+};
+
 export async function sendNotification(config: NotificationConfig, options: NotificationOptions) {
   try {
     if (config.type === NOTIFICATION_TYPE.TEAMS) {
@@ -148,6 +172,29 @@ export async function sendNotification(config: NotificationConfig, options: Noti
             ],
           },
         ],
+      });
+    }
+
+    if (config.type === NOTIFICATION_TYPE.TELEGRAM) {
+      const { botToken, chatId } = config.config;
+      if (!botToken) throw new Error('Telegram botToken is missing');
+      if (!chatId) throw new Error('Telegram chatId is missing');
+
+      await axios.post(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        chat_id: chatId,
+        text: formatTelegramMessage(options),
+        parse_mode: 'HTML',
+        disable_web_page_preview: true,
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text: 'View Dashboard',
+                url: dashboardUrl,
+              },
+            ],
+          ],
+        },
       });
     }
   } catch (error: any) {
