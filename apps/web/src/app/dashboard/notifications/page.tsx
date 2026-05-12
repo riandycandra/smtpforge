@@ -5,6 +5,21 @@ import { NotificationService, NotificationConfig } from '@/services/api/notifica
 import { Bell, Plus, CheckCircle, XCircle, Trash2, Edit2, ExternalLink, Send } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
+const channelDetails: Record<string, { namePlaceholder: string; webhookPlaceholder: string; helpHref: string; helpLabel: string }> = {
+  teams: {
+    namePlaceholder: 'e.g. Engineering Team MS Teams',
+    webhookPlaceholder: 'https://outlook.office.com/webhook/...',
+    helpHref: 'https://learn.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/add-incoming-webhook',
+    helpLabel: 'How to get a Teams webhook?',
+  },
+  slack: {
+    namePlaceholder: 'e.g. Engineering Slack Alerts',
+    webhookPlaceholder: 'https://hooks.slack.com/services/...',
+    helpHref: 'https://api.slack.com/messaging/webhooks',
+    helpLabel: 'How to get a Slack webhook?',
+  },
+};
+
 export default function NotificationsPage() {
   const [configs, setConfigs] = useState<NotificationConfig[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,12 +45,10 @@ export default function NotificationsPage() {
   }, []);
 
   useEffect(() => {
-    let isMounted = true;
     const fetch = async () => {
       await loadConfigs();
     };
     fetch();
-    return () => { isMounted = false; };
   }, [loadConfigs]);
 
   const resetForm = () => {
@@ -96,6 +109,8 @@ export default function NotificationsPage() {
     }
   };
 
+  const selectedChannelDetails = channelDetails[type] || channelDetails.teams;
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -139,7 +154,6 @@ export default function NotificationsPage() {
                       <div className="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
                         <Bell className="w-12 h-12 mb-3 opacity-20" />
                         <p className="text-lg font-medium">No notification channels yet</p>
-                        <p className="text-sm mt-1">Add a Microsoft Teams webhook to get started.</p>
                       </div>
                     </td>
                   </tr>
@@ -235,7 +249,7 @@ export default function NotificationsPage() {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Engineering Team MS Teams"
+                  placeholder={selectedChannelDetails.namePlaceholder}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                 />
               </div>
@@ -248,7 +262,7 @@ export default function NotificationsPage() {
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                 >
                   <option value="teams">Microsoft Teams</option>
-                  <option value="slack" disabled>Slack (Coming Soon)</option>
+                  <option value="slack">Slack</option>
                   <option value="telegram" disabled>Telegram (Coming Soon)</option>
                 </select>
               </div>
@@ -260,12 +274,12 @@ export default function NotificationsPage() {
                   required
                   value={webhookUrl}
                   onChange={(e) => setWebhookUrl(e.target.value)}
-                  placeholder="https://outlook.office.com/webhook/..."
+                  placeholder={selectedChannelDetails.webhookPlaceholder}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                 />
                 <p className="mt-2 text-xs text-gray-500 flex items-center">
                   <ExternalLink className="w-3 h-3 mr-1" />
-                  <a href="https://learn.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/add-incoming-webhook" target="_blank" rel="noreferrer" className="underline hover:text-blue-500">How to get a Teams webhook?</a>
+                  <a href={selectedChannelDetails.helpHref} target="_blank" rel="noreferrer" className="underline hover:text-blue-500">{selectedChannelDetails.helpLabel}</a>
                 </p>
               </div>
 

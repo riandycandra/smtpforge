@@ -2,7 +2,27 @@ import { NotificationConfig } from '@mailer/database';
 import { NOTIFICATION_TYPE, WORKER_STATUS, WorkerStatus } from '@mailer/shared';
 import axios from 'axios';
 
-export async function sendNotification(config: NotificationConfig, options: { title: string; message: string; style?: 'good' | 'attention' | 'accent' | 'warning'; facts?: { title: string; value: string }[] }) {
+type NotificationOptions = {
+  title: string;
+  message: string;
+  style?: 'good' | 'attention' | 'accent' | 'warning';
+  facts?: { title: string; value: string }[];
+};
+
+const dashboardUrl = process.env.WEB_URL || 'http://localhost:3001/dashboard';
+
+const slackStyleColor: Record<NonNullable<NotificationOptions['style']>, string> = {
+  good: '#2EB67D',
+  attention: '#E01E5A',
+  accent: '#1264A3',
+  warning: '#ECB22E',
+};
+
+const formatTimestamp = () => new Date().toLocaleString();
+
+const toSlackMarkdown = (text: string) => text.replace(/\*\*(.*?)\*\*/g, '*$1*');
+
+export async function sendNotification(config: NotificationConfig, options: NotificationOptions) {
   try {
     if (config.type === NOTIFICATION_TYPE.TEAMS) {
       const { webhookUrl } = config.config;
@@ -63,10 +83,69 @@ export async function sendNotification(config: NotificationConfig, options: { ti
                 {
                   type: 'Action.OpenUrl',
                   title: 'View Dashboard',
-                  url: process.env.WEB_URL || 'http://localhost:3001/dashboard'
+                  url: dashboardUrl
                 }
               ]
             },
+          },
+        ],
+      });
+    }
+
+    if (config.type === NOTIFICATION_TYPE.SLACK) {
+      const { webhookUrl } = config.config;
+      if (!webhookUrl) throw new Error('Slack webhookUrl is missing');
+
+      const facts = [
+        ...(options.facts || []),
+        { title: 'Timestamp', value: formatTimestamp() },
+        { title: 'Platform', value: 'SMTP Forge' },
+      ];
+
+      await axios.post(webhookUrl, {
+        text: `${options.title}\n${toSlackMarkdown(options.message)}`,
+        attachments: [
+          {
+            color: slackStyleColor[options.style || 'accent'],
+            blocks: [
+              {
+                type: 'header',
+                text: {
+                  type: 'plain_text',
+                  text: options.title,
+                  emoji: true,
+                },
+              },
+              {
+                type: 'section',
+                text: {
+                  type: 'mrkdwn',
+                  text: toSlackMarkdown(options.message),
+                },
+              },
+              {
+                type: 'section',
+                fields: facts.map((fact) => ({
+                  type: 'mrkdwn',
+                  text: `*${fact.title}:*\n${fact.value}`,
+                })),
+              },
+              {
+                type: 'actions',
+                elements: [
+                  {
+                    type: 'button',
+                    text: {
+                      type: 'plain_text',
+                      text: 'View Dashboard',
+                      emoji: true,
+                    },
+                    url: dashboardUrl,
+                    style: 'primary',
+                  },
+                ],
+              },
+            ],
           },
         ],
       });
