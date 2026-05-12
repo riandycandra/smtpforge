@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ApiKeyService } from '@/services/api/api-key.service';
-import { Key, Plus, CheckCircle, XCircle } from 'lucide-react';
+import { Key, Plus, CheckCircle, XCircle, Edit2 } from 'lucide-react';
 
 export default function ApiKeysListPage() {
   const [apiKeys, setApiKeys] = useState<any[]>([]);
@@ -84,8 +84,14 @@ export default function ApiKeysListPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {new Date(key.created_at).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600 dark:text-blue-400 font-medium">
-                    <Link href={`/dashboard/api-keys/${key.id}`} className="hover:underline">Manage</Link>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <Link
+                      href={`/dashboard/api-keys/${key.id}`}
+                      className="inline-flex items-center justify-center p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                      title="Edit API Key"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </Link>
                   </td>
                 </tr>
               ))}

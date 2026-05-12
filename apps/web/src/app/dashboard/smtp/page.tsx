@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { SmtpService } from '@/services/api/smtp.service';
-import { Server, Plus, CheckCircle, XCircle } from 'lucide-react';
+import { Server, Plus, CheckCircle, XCircle, Edit2 } from 'lucide-react';
 
 export default function SmtpListPage() {
   const [accounts, setAccounts] = useState<any[]>([]);
@@ -80,8 +80,14 @@ export default function SmtpListPage() {
                       </span>
                     )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600 dark:text-blue-400 font-medium">
-                    <Link href={`/dashboard/smtp/${acc.id}`} className="hover:underline">Manage</Link>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <Link
+                      href={`/dashboard/smtp/${acc.id}`}
+                      className="inline-flex items-center justify-center p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                      title="Edit SMTP Account"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </Link>
                   </td>
                 </tr>
               ))}
