@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { sendSuccess, sendError } from '../../utils/response';
-import { smtpCreateValidator, smtpUpdateValidator, paginationValidator } from '../../validators/adminValidator';
+import { smtpCreateValidator, smtpUpdateValidator, smtpTestValidator, paginationValidator } from '../../validators/adminValidator';
 import { validate } from '../../validators/validate';
 import { getPagination, getPagingData } from '../../utils/pagination';
 import * as smtpService from '../../services/smtp.service';
@@ -37,6 +37,19 @@ router.post('/', smtpCreateValidator, validate, async (req: Request, res: Respon
     if (error.name === 'SequelizeUniqueConstraintError') {
       return sendError(res, 'SMTP Account name must be unique', [], 400);
     }
+    next(error);
+  }
+});
+
+router.post('/test', smtpTestValidator, validate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await smtpService.testSmtpConnectionConfig(req.body);
+    logger.info('Admin Action: SMTP draft tested', { adminId: req.adminAuth?.userId, success: result.success });
+    if (!result.success) {
+      return sendError(res, result.error || 'Test failed', [{ latency: result.latency_ms }], 400);
+    }
+    return sendSuccess(res, result);
+  } catch (error) {
     next(error);
   }
 });

@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { SmtpService } from '@/services/api/smtp.service';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Plug } from 'lucide-react';
 import Link from 'next/link';
 
 const formSchema = z.object({
@@ -24,11 +24,41 @@ const formSchema = z.object({
   ignore_tls_errors: z.boolean().default(false),
 });
 
+const connectionSchema = formSchema.pick({
+  host: true,
+  port: true,
+  secure: true,
+  username: true,
+  password: true,
+  ignore_tls_errors: true,
+});
+
+type SmtpFormInput = z.input<typeof formSchema>;
+type SmtpFormValues = z.output<typeof formSchema>;
+type ApiResponse<T> = {
+  success: boolean;
+  data: T;
+};
+type TestConnectionResponse = {
+  latency_ms: number;
+};
+
+function getErrorMessage(error: unknown) {
+  if (error instanceof Error) return error.message;
+  if (typeof error === 'object' && error !== null && 'message' in error) {
+    const message = (error as { message?: unknown }).message;
+    if (typeof message === 'string') return message;
+  }
+  return undefined;
+}
+
 export default function NewSmtpPage() {
   const router = useRouter();
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [testingConnection, setTestingConnection] = useState(false);
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
+  const { register, handleSubmit, trigger, getValues, formState: { errors, isSubmitting } } = useForm<SmtpFormInput, unknown, SmtpFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       port: 587,
@@ -39,20 +69,49 @@ export default function NewSmtpPage() {
     }
   });
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: SmtpFormValues) => {
     try {
+      setError('');
+      setSuccess('');
       const payload = {
         ...data,
         rate_limit_per_hour: data.rate_limit_per_hour || null,
         from_name: data.from_name || null,
       };
       
-      const res: any = await SmtpService.createAccount(payload);
+      const res = await SmtpService.createAccount(payload) as ApiResponse<unknown>;
       if (res.success) {
         router.push('/dashboard/smtp');
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to create SMTP account');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err) || 'Failed to create SMTP account');
+    }
+  };
+
+  const handleTestConnection = async () => {
+    const isValid = await trigger(['host', 'port', 'secure', 'username', 'password', 'ignore_tls_errors']);
+    if (!isValid) return;
+
+    try {
+      setTestingConnection(true);
+      setError('');
+      setSuccess('');
+      const values = connectionSchema.parse(getValues());
+      const res = await SmtpService.testDraftConnection({
+        host: values.host,
+        port: values.port,
+        secure: values.secure,
+        username: values.username,
+        password: values.password,
+        ignore_tls_errors: values.ignore_tls_errors,
+      }) as ApiResponse<TestConnectionResponse>;
+      if (res.success) {
+        setSuccess(`Connection successful! Latency: ${res.data.latency_ms}ms`);
+      }
+    } catch (err: unknown) {
+      setError(`Connection test failed: ${getErrorMessage(err) || 'Unknown error'}`);
+    } finally {
+      setTestingConnection(false);
     }
   };
 
@@ -69,6 +128,11 @@ export default function NewSmtpPage() {
         {error && (
           <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 rounded border border-red-200 dark:border-red-900 text-sm">
             {error}
+          </div>
+        )}
+        {success && (
+          <div className="mb-6 p-4 bg-green-50 dark:bg-green-950/50 text-green-700 dark:text-green-400 rounded border border-green-200 dark:border-green-900 text-sm">
+            {success}
           </div>
         )}
 
@@ -190,16 +254,25 @@ export default function NewSmtpPage() {
             </div>
           </div>
 
-          <div className="pt-4 border-t border-gray-200 dark:border-gray-800 flex justify-end mt-8">
+          <div className="pt-4 border-t border-gray-200 dark:border-gray-800 flex flex-wrap justify-end gap-3 mt-8">
             <Link
               href="/dashboard/smtp"
-              className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 mr-3"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
             >
               Cancel
             </Link>
             <button
+              type="button"
+              onClick={handleTestConnection}
+              disabled={testingConnection || isSubmitting}
+              className="flex items-center px-4 py-2 border border-blue-600 dark:border-blue-500 text-blue-600 dark:text-blue-400 rounded hover:bg-blue-50 dark:hover:bg-blue-950 text-sm font-medium disabled:opacity-50"
+            >
+              <Plug className="w-4 h-4 mr-2" />
+              {testingConnection ? 'Testing...' : 'Test Connection'}
+            </button>
+            <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || testingConnection}
               className="px-4 py-2 border border-transparent rounded shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
             >
               {isSubmitting ? 'Saving...' : 'Save SMTP Account'}

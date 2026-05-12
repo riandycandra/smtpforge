@@ -12,6 +12,7 @@ export const smtpCreateValidator = [
   body('retry_attempts').optional().isInt({ min: 0, max: 10 }),
   body('rate_limit_per_hour').optional({ nullable: true }).isInt({ min: 1 }),
   body('is_active').optional().isBoolean(),
+  body('ignore_tls_errors').optional().isBoolean(),
 ];
 
 export const smtpUpdateValidator = [
@@ -26,6 +27,16 @@ export const smtpUpdateValidator = [
   body('retry_attempts').optional().isInt({ min: 0, max: 10 }),
   body('rate_limit_per_hour').optional({ nullable: true }).isInt({ min: 1 }),
   body('is_active').optional().isBoolean(),
+  body('ignore_tls_errors').optional().isBoolean(),
+];
+
+export const smtpTestValidator = [
+  body('host').notEmpty().isString().isLength({ max: 255 }),
+  body('port').notEmpty().isInt({ min: 1, max: 65535 }),
+  body('secure').isBoolean(),
+  body('username').notEmpty().isString(),
+  body('password').notEmpty().isString(),
+  body('ignore_tls_errors').optional().isBoolean(),
 ];
 
 export const apiKeyCreateValidator = [

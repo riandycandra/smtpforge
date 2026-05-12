@@ -2,6 +2,15 @@ import { SmtpAccount } from '@mailer/database';
 import { encrypt, decrypt } from '@mailer/database';
 import nodemailer from 'nodemailer';
 
+type SmtpConnectionConfig = {
+  host: string;
+  port: number;
+  secure: boolean;
+  username: string;
+  password: string;
+  ignore_tls_errors?: boolean;
+};
+
 export async function createSmtpAccount(data: any) {
   const payload = { ...data };
   if (payload.password) {
@@ -56,18 +65,31 @@ export async function testSmtpConnection(id: string) {
     throw new Error('SMTP Account not found');
   }
 
-  const decryptedPassword = decrypt(account.password_encrypted);
-
-  const transporter = nodemailer.createTransport({
+  return verifySmtpConnection({
     host: account.host,
     port: account.port,
     secure: account.secure,
+    username: account.username,
+    password: decrypt(account.password_encrypted),
+    ignore_tls_errors: account.ignore_tls_errors,
+  });
+}
+
+export async function testSmtpConnectionConfig(config: SmtpConnectionConfig) {
+  return verifySmtpConnection(config);
+}
+
+async function verifySmtpConnection(config: SmtpConnectionConfig) {
+  const transporter = nodemailer.createTransport({
+    host: config.host,
+    port: Number(config.port),
+    secure: config.secure,
     auth: {
-      user: account.username,
-      pass: decryptedPassword,
+      user: config.username,
+      pass: config.password,
     },
     tls: {
-      rejectUnauthorized: !account.ignore_tls_errors,
+      rejectUnauthorized: !config.ignore_tls_errors,
     }
   });
 
