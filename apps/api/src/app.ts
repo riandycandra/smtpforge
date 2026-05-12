@@ -6,8 +6,12 @@ import { requestLogger } from './middlewares/logger';
 import { errorHandler } from './middlewares/errorHandler';
 import { routes } from './routes';
 import { healthRouter } from './routes/health';
+import { docsRouter } from './routes/docs';
 
 export const app = express();
+
+// Public API docs are intentionally available without authentication.
+app.use('/docs', docsRouter);
 
 // Security middlewares
 app.use(helmet());

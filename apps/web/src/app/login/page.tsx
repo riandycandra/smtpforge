@@ -4,7 +4,54 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthService } from '@/services/api/auth.service';
 import { useTheme } from '../theme-provider';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon, ExternalLink } from 'lucide-react';
+
+type AuthStatusResponse = {
+  success: boolean;
+  data: {
+    isDefaultState: boolean;
+  };
+};
+
+type LoginResponse = {
+  success: boolean;
+  data: {
+    token: string;
+    must_change_password: boolean;
+  };
+  message?: string;
+};
+
+const getErrorMessage = (error: unknown) => {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  if (typeof error === 'object' && error !== null && 'message' in error) {
+    const message = (error as { message?: unknown }).message;
+    if (typeof message === 'string') {
+      return message;
+    }
+  }
+
+  return 'Invalid credentials';
+};
+
+const getDocsUrl = () => {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+  if (!apiUrl || apiUrl === '/api/v1') {
+    return '/docs';
+  }
+
+  if (apiUrl.startsWith('http://') || apiUrl.startsWith('https://')) {
+    return new URL('/docs', apiUrl).toString();
+  }
+
+  return apiUrl.replace(/\/api\/v1\/?$/, '/docs');
+};
+
+const docsUrl = getDocsUrl();
 
 export default function LoginPage() {
   const router = useRouter();
@@ -19,11 +66,11 @@ export default function LoginPage() {
     // Check if we should show the default credentials hint
     const checkStatus = async () => {
       try {
-        const res: any = await AuthService.getStatus();
+        const res = await AuthService.getStatus() as unknown as AuthStatusResponse;
         if (res.success) {
           setIsDefaultState(res.data.isDefaultState);
         }
-      } catch (err) {
+      } catch {
         // Silently ignore status check errors
       }
     };
@@ -42,7 +89,7 @@ export default function LoginPage() {
     }
 
     try {
-      const res: any = await AuthService.login({ username, password });
+      const res = await AuthService.login({ username, password }) as unknown as LoginResponse;
       if (res.success) {
         const token = res.data.token;
         // Store in localStorage for apiClient
@@ -59,8 +106,8 @@ export default function LoginPage() {
       } else {
         setError(res.message || 'Login failed');
       }
-    } catch (err: any) {
-      setError(err.message || 'Invalid credentials');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -85,6 +132,15 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">SMTP Forge</h1>
           <p className="text-gray-500 dark:text-gray-400">Sign in to manage your email service</p>
+          <a
+            href={docsUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-3 inline-flex items-center justify-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+          >
+            View public API docs
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
         </div>
         
         {error && (
