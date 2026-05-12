@@ -7,6 +7,12 @@ export function middleware(request: NextRequest) {
   
   const isDashboard = pathname.startsWith('/dashboard');
   const isChangePassword = pathname === '/change-password';
+  const isLogin = pathname === '/login';
+
+  // Authenticated users should not see the login screen again.
+  if (isLogin && token) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
 
   // Protect dashboard — require token
   if (isDashboard && !token) {
@@ -22,5 +28,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/change-password'],
+  matcher: ['/login', '/dashboard/:path*', '/change-password'],
 };

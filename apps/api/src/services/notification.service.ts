@@ -32,6 +32,37 @@ const escapeTelegramHtml = (text: string) =>
 const toTelegramHtml = (text: string) =>
   escapeTelegramHtml(text).replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
 
+const getNotificationErrorMessage = (error: any) => {
+  const providerMessage =
+    error.response?.data?.description ||
+    error.response?.data?.error ||
+    error.response?.statusText;
+
+  if (providerMessage) {
+    return `${error.message}: ${providerMessage}`;
+  }
+
+  return error.message || 'Unknown notification error';
+};
+
+const canUseTelegramDashboardButton = (url: string) => {
+  try {
+    const parsedUrl = new URL(url);
+    const hostname = parsedUrl.hostname.toLowerCase();
+
+    return (
+      ['http:', 'https:'].includes(parsedUrl.protocol) &&
+      hostname !== 'localhost' &&
+      hostname !== '127.0.0.1' &&
+      hostname !== '0.0.0.0' &&
+      hostname !== '[::1]' &&
+      !hostname.endsWith('.local')
+    );
+  } catch {
+    return false;
+  }
+};
+
 const formatTelegramMessage = (options: NotificationOptions) => {
   const facts = [
     ...(options.facts || []),
@@ -180,12 +211,15 @@ export async function sendNotification(config: NotificationConfig, options: Noti
       if (!botToken) throw new Error('Telegram botToken is missing');
       if (!chatId) throw new Error('Telegram chatId is missing');
 
-      await axios.post(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      const payload: Record<string, unknown> = {
         chat_id: chatId,
         text: formatTelegramMessage(options),
         parse_mode: 'HTML',
         disable_web_page_preview: true,
-        reply_markup: {
+      };
+
+      if (canUseTelegramDashboardButton(dashboardUrl)) {
+        payload.reply_markup = {
           inline_keyboard: [
             [
               {
@@ -194,11 +228,15 @@ export async function sendNotification(config: NotificationConfig, options: Noti
               },
             ],
           ],
-        },
-      });
+        };
+      }
+
+      await axios.post(`https://api.telegram.org/bot${botToken}/sendMessage`, payload);
     }
   } catch (error: any) {
-    console.error(`Failed to send notification via ${config.type}:`, error.message);
+    const message = getNotificationErrorMessage(error);
+    console.error(`Failed to send notification via ${config.type}:`, message);
+    throw new Error(message);
   }
 }
 

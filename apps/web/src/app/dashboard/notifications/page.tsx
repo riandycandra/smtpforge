@@ -225,7 +225,7 @@ export default function NotificationsPage() {
                           toast.promise(promise, {
                             loading: 'Sending test notification...',
                             success: 'Test notification sent!',
-                            error: 'Failed to send test notification',
+                            error: (err) => err?.error || err?.message || 'Failed to send test notification',
                           });
                         }}
                         title="Send Test Notification"

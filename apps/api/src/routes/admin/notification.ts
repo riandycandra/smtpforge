@@ -107,6 +107,6 @@ adminNotificationsRouter.post('/:id/test', async (req, res) => {
     res.json({ message: 'Test notification sent successfully' });
   } catch (error: any) {
     logger.error('Failed to send test notification', error);
-    res.status(500).json({ error: 'Failed to send test notification' });
+    res.status(500).json({ error: error.message || 'Failed to send test notification' });
   }
 });
