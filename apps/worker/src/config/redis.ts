@@ -4,6 +4,7 @@ import { env } from './env';
 export const redisConnectionOptions = {
   host: env.REDIS_HOST,
   port: env.REDIS_PORT,
+  db: env.REDIS_DB,
   maxRetriesPerRequest: null,
 };
 

@@ -28,6 +28,11 @@ export function createEmailWorker() {
           throw new Error(`EmailJob record ${payload.email_job_id} not found`);
         }
 
+        if (emailJobRecord.status === EMAIL_STATUS.SENT) {
+          console.log(`[Worker] Job ID: ${job.id} already sent; skipping duplicate delivery.`);
+          return { status: EMAIL_STATUS.SENT, message: 'Email already sent; skipped duplicate delivery.' };
+        }
+
         // Update status to processing
         emailJobRecord.status = EMAIL_STATUS.PROCESSING;
         await emailJobRecord.save();
@@ -96,6 +101,11 @@ export function createEmailWorker() {
         const payload = job.data;
         const emailJobRecord = await EmailJob.findByPk(payload.email_job_id);
         if (emailJobRecord) {
+          if (emailJobRecord.status === EMAIL_STATUS.SENT) {
+            console.log(`[Worker] Job ${job.id} failed after email was already marked sent; keeping sent status.`);
+            return;
+          }
+
           emailJobRecord.status = EMAIL_STATUS.FAILED;
           await emailJobRecord.save();
         }

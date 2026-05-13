@@ -25,6 +25,7 @@ export const env = {
   REDIS_HOST: requireEnv('REDIS_HOST'),
   REDIS_PORT: parseInt(process.env.REDIS_PORT || '6379', 10),
   REDIS_PASSWORD: process.env.REDIS_PASSWORD || undefined,
+  REDIS_DB: parseInt(process.env.REDIS_DB || '0', 10),
 
   // Security
   SMTP_ENCRYPTION_KEY: requireEnv('SMTP_ENCRYPTION_KEY'),
