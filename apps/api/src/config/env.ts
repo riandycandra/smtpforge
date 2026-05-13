@@ -26,6 +26,7 @@ export const env = {
   // Redis
   REDIS_HOST: requireEnv('REDIS_HOST'),
   REDIS_PORT: parseInt(process.env.REDIS_PORT || '6379', 10),
+  REDIS_DB: parseInt(process.env.REDIS_DB || '0', 10),
   REDIS_PASSWORD: process.env.REDIS_PASSWORD || undefined,
 
   // Security
