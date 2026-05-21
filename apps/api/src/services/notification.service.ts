@@ -32,17 +32,23 @@ const escapeTelegramHtml = (text: string) =>
 const toTelegramHtml = (text: string) =>
   escapeTelegramHtml(text).replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
 
-const getNotificationErrorMessage = (error: any) => {
-  const providerMessage =
-    error.response?.data?.description ||
-    error.response?.data?.error ||
-    error.response?.statusText;
+const getNotificationErrorMessage = (error: unknown) => {
+  if (axios.isAxiosError(error)) {
+    const providerMessage =
+      error.response?.data?.description ||
+      error.response?.data?.error ||
+      error.response?.statusText;
 
-  if (providerMessage) {
-    return `${error.message}: ${providerMessage}`;
+    if (providerMessage) {
+      return `${error.message}: ${providerMessage}`;
+    }
   }
 
-  return error.message || 'Unknown notification error';
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return 'Unknown notification error';
 };
 
 const canUseTelegramDashboardButton = (url: string) => {
@@ -233,7 +239,7 @@ export async function sendNotification(config: NotificationConfig, options: Noti
 
       await axios.post(`https://api.telegram.org/bot${botToken}/sendMessage`, payload);
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     const message = getNotificationErrorMessage(error);
     console.error(`Failed to send notification via ${config.type}:`, message);
     throw new Error(message);
