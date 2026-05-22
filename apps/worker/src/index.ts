@@ -3,6 +3,7 @@ import { createEmailWorker } from './workers/email.worker';
 import { redisClient } from './config/redis';
 import { connectDatabase } from '@mailer/database';
 import { startupTempCleanupScan } from './services/attachment.service';
+
 import { logger } from './utils/logger';
 
 async function bootstrap() {

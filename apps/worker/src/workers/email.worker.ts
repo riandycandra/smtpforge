@@ -1,6 +1,6 @@
 import { Worker, Job } from 'bullmq';
 import { redisConnectionOptions } from '../config/redis';
-import { QUEUE_NAME_EMAIL_DELIVERY, EmailJobPayload, EMAIL_STATUS } from '@mailer/shared';
+import { QUEUE_NAME_EMAIL_DELIVERY, EmailJobPayload, EMAIL_STATUS, logger } from '@mailer/shared';
 import { sendEmailService } from '../services/send-email.service';
 import { classifyError, RetryClassification } from '../services/retry-classifier.service';
 import { EmailJob } from '@mailer/database';
@@ -19,7 +19,7 @@ export function createEmailWorker() {
       const payload = job.data;
       let emailJobRecord: EmailJob | null = null;
       
-      console.log(`[Worker] Processing Job ID: ${job.id} | Request ID: ${payload.request_id || 'N/A'}`);
+      logger.info(`[Worker] Processing Job ID: ${job.id} | Request ID: ${payload.request_id || 'N/A'}`);
 
       try {
         emailJobRecord = await EmailJob.findByPk(payload.email_job_id);
@@ -29,7 +29,7 @@ export function createEmailWorker() {
         }
 
         if (emailJobRecord.status === EMAIL_STATUS.SENT) {
-          console.log(`[Worker] Job ID: ${job.id} already sent; skipping duplicate delivery.`);
+          logger.info(`[Worker] Job ID: ${job.id} already sent; skipping duplicate delivery.`);
           return { status: EMAIL_STATUS.SENT, message: 'Email already sent; skipped duplicate delivery.' };
         }
 
@@ -94,7 +94,7 @@ export function createEmailWorker() {
   );
 
   worker.on('failed', async (job, err) => {
-    console.error(`Job ${job?.id} failed with ${err.message}`);
+    logger.error(`Job ${job?.id} failed with ${err.message}`);
     // If it ran out of attempts, mark as failed permanently
     if (job && job.attemptsMade >= (job.opts.attempts || 1)) {
       try {
@@ -102,7 +102,7 @@ export function createEmailWorker() {
         const emailJobRecord = await EmailJob.findByPk(payload.email_job_id);
         if (emailJobRecord) {
           if (emailJobRecord.status === EMAIL_STATUS.SENT) {
-            console.log(`[Worker] Job ${job.id} failed after email was already marked sent; keeping sent status.`);
+            logger.info(`[Worker] Job ${job.id} failed after email was already marked sent; keeping sent status.`);
             return;
           }
 
@@ -111,7 +111,7 @@ export function createEmailWorker() {
         }
         emailJobsFailedCounter.inc();
       } catch (e) {
-        console.error('Failed to update DB on final job failure', e);
+        logger.error('Failed to update DB on final job failure', e);
       }
     }
   });
