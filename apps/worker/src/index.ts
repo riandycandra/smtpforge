@@ -3,7 +3,8 @@ import { createEmailWorker } from './workers/email.worker';
 import { redisClient } from './config/redis';
 import { connectDatabase } from '@mailer/database';
 import { startupTempCleanupScan } from './services/attachment.service';
-import { logger } from '@mailer/shared';
+
+import { logger } from './utils/logger';
 
 async function bootstrap() {
   logger.info('Starting Mailer Worker Service...');
@@ -45,4 +46,4 @@ async function bootstrap() {
   }
 }
 
-bootstrap().catch(logger.error);
+bootstrap().catch((error) => logger.error('Unhandled error during bootstrap:', error));
