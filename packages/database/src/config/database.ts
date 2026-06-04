@@ -1,4 +1,5 @@
 import { Sequelize } from 'sequelize';
+import { logger } from '@mailer/shared';
 
 export const sequelize = new Sequelize({
   dialect: 'postgres',
@@ -20,9 +21,12 @@ export async function connectDatabase() {
   try {
     await sequelize.authenticate();
     await sequelize.sync({ alter: true });
-    console.log('Database connection established successfully.');
-  } catch (error) {
-    console.error('Unable to connect to the database:', error);
+    logger.info('Database connection established successfully.');
+  } catch (error: unknown) {
+    const formattedError = error instanceof Error
+      ? { message: error.message, name: error.name, stack: error.stack }
+      : error;
+    logger.error('Unable to connect to the database:', formattedError);
     process.exit(1);
   }
 }
