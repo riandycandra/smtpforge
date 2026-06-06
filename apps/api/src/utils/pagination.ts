@@ -1,6 +1,6 @@
 import { Request } from 'express';
 
-export interface PaginationParams {
+interface PaginationParams {
   limit: number;
   offset: number;
   page: number;
