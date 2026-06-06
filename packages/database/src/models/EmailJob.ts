@@ -2,7 +2,7 @@ import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../config/database';
 import { EMAIL_STATUS, EmailStatus } from '@mailer/shared';
 
-export interface EmailJobAttributes {
+interface EmailJobAttributes {
   id: string;
   job_id: string;
   api_key_id: string;
@@ -23,7 +23,7 @@ export interface EmailJobAttributes {
   updated_at?: Date;
 }
 
-export interface EmailJobCreationAttributes extends Optional<EmailJobAttributes, 'id' | 'cc' | 'bcc' | 'attachments' | 'error_message' | 'smtp_response' | 'retry_count' | 'latency_ms' | 'sent_at'> {}
+interface EmailJobCreationAttributes extends Optional<EmailJobAttributes, 'id' | 'cc' | 'bcc' | 'attachments' | 'error_message' | 'smtp_response' | 'retry_count' | 'latency_ms' | 'sent_at'> {}
 
 export class EmailJob extends Model<EmailJobAttributes, EmailJobCreationAttributes> implements EmailJobAttributes {
   declare id: string;

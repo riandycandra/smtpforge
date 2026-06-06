@@ -1,7 +1,7 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../config/database';
 
-export interface ApiKeySmtpPermissionAttributes {
+interface ApiKeySmtpPermissionAttributes {
   id: string;
   api_key_id: string;
   smtp_account_id: string;
@@ -9,7 +9,7 @@ export interface ApiKeySmtpPermissionAttributes {
   updated_at?: Date;
 }
 
-export interface ApiKeySmtpPermissionCreationAttributes extends Optional<ApiKeySmtpPermissionAttributes, 'id'> {}
+interface ApiKeySmtpPermissionCreationAttributes extends Optional<ApiKeySmtpPermissionAttributes, 'id'> {}
 
 export class ApiKeySmtpPermission extends Model<ApiKeySmtpPermissionAttributes, ApiKeySmtpPermissionCreationAttributes> implements ApiKeySmtpPermissionAttributes {
   declare id: string;

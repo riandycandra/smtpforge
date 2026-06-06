@@ -2,7 +2,7 @@ import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../config/database';
 import { NotificationType, WorkerStatus, WORKER_STATUS } from '@mailer/shared';
 
-export interface NotificationConfigAttributes {
+interface NotificationConfigAttributes {
   id: string;
   name: string;
   type: NotificationType;
@@ -14,7 +14,7 @@ export interface NotificationConfigAttributes {
   updated_at?: Date;
 }
 
-export interface NotificationConfigCreationAttributes extends Optional<NotificationConfigAttributes, 'id' | 'is_enabled' | 'last_status' | 'last_checked_at'> {}
+interface NotificationConfigCreationAttributes extends Optional<NotificationConfigAttributes, 'id' | 'is_enabled' | 'last_status' | 'last_checked_at'> {}
 
 export class NotificationConfig extends Model<NotificationConfigAttributes, NotificationConfigCreationAttributes> implements NotificationConfigAttributes {
   declare id: string;
