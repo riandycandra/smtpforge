@@ -1,7 +1,7 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../config/database';
 
-export interface SmtpAccountAttributes {
+interface SmtpAccountAttributes {
   id: string;
   name: string;
   host: string;
@@ -19,7 +19,7 @@ export interface SmtpAccountAttributes {
   updated_at?: Date;
 }
 
-export interface SmtpAccountCreationAttributes extends Optional<SmtpAccountAttributes, 'id' | 'secure' | 'retry_attempts' | 'is_active' | 'from_name' | 'rate_limit_per_hour' | 'ignore_tls_errors'> {}
+interface SmtpAccountCreationAttributes extends Optional<SmtpAccountAttributes, 'id' | 'secure' | 'retry_attempts' | 'is_active' | 'from_name' | 'rate_limit_per_hour' | 'ignore_tls_errors'> {}
 
 export class SmtpAccount extends Model<SmtpAccountAttributes, SmtpAccountCreationAttributes> implements SmtpAccountAttributes {
   declare id: string;

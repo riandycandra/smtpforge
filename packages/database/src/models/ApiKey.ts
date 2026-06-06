@@ -1,7 +1,7 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../config/database';
 
-export interface ApiKeyAttributes {
+interface ApiKeyAttributes {
   id: string;
   name: string;
   api_key_hash: string;
@@ -11,7 +11,7 @@ export interface ApiKeyAttributes {
   updated_at?: Date;
 }
 
-export interface ApiKeyCreationAttributes extends Optional<ApiKeyAttributes, 'id' | 'is_active' | 'rate_limit_per_hour'> {}
+interface ApiKeyCreationAttributes extends Optional<ApiKeyAttributes, 'id' | 'is_active' | 'rate_limit_per_hour'> {}
 
 export class ApiKey extends Model<ApiKeyAttributes, ApiKeyCreationAttributes> implements ApiKeyAttributes {
   declare id: string;
