@@ -26,12 +26,6 @@ export const emailJobsRetryCounter = new Counter({
   registers: [workerRegistry],
 });
 
-export const queueDepthGauge = new Gauge({
-  name: 'mailer_worker_queue_depth',
-  help: 'Number of pending jobs in the queue',
-  registers: [workerRegistry],
-});
-
 export const processingLatencyHistogram = new Histogram({
   name: 'mailer_worker_processing_latency_ms',
   help: 'Latency of email job processing in milliseconds',
