@@ -38,17 +38,9 @@ const getErrorMessage = (error: unknown) => {
 };
 
 const getDocsUrl = () => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
-  if (!apiUrl || apiUrl === '/api/v1') {
-    return '/docs';
-  }
-
-  if (apiUrl.startsWith('http://') || apiUrl.startsWith('https://')) {
-    return new URL('/docs', apiUrl).toString();
-  }
-
-  return apiUrl.replace(/\/api\/v1\/?$/, '/docs');
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
+  const backendUrl = apiUrl.replace(/\/api\/v1\/?$/, '').replace(/\/$/, '');
+  return `${backendUrl}/docs`;
 };
 
 const docsUrl = getDocsUrl();
