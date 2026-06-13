@@ -9,6 +9,13 @@ export function middleware(request: NextRequest) {
   const isChangePassword = pathname === '/change-password';
   const isLogin = pathname === '/login';
 
+  // Normalize trailing slash for matched pages if present (since skipTrailingSlashRedirect is enabled)
+  if (pathname.endsWith('/') && pathname !== '/') {
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = pathname.slice(0, -1);
+    return NextResponse.redirect(redirectUrl, { status: 308 });
+  }
+
   // Authenticated users should not see the login screen again.
   if (isLogin && token) {
     return NextResponse.redirect(new URL('/dashboard', request.url));

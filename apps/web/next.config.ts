@@ -4,6 +4,7 @@ const apiTarget = process.env.API_URL || (process.env.NODE_ENV === 'development'
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  skipTrailingSlashRedirect: true,
   async rewrites() {
     return [
       {
