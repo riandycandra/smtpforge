@@ -19,7 +19,7 @@ app.use(helmet({
 }));
 
 const allowedOrigins = [
-  process.env.CORS_ORIGIN,
+  ...(process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',').map(o => o.trim()) : []),
   process.env.WEB_URL,
   'http://localhost:3001',
 ].filter(Boolean) as string[];
@@ -34,9 +34,19 @@ app.use(cors({
       return callback(null, true);
     }
     
-    // In development, allow any localhost origin
-    if (process.env.NODE_ENV === 'development' && /^https?:\/\/localhost(:\d+)?$/.test(origin)) {
-      return callback(null, true);
+    // In development, allow localhost, 127.0.0.1, or private network IP addresses
+    if (process.env.NODE_ENV === 'development') {
+      if (/^https?:\/\/(localhost|127\.0\.0\.1|::1|\[::1\])(:\d+)?$/.test(origin)) {
+        return callback(null, true);
+      }
+      // Matches private IPv4 ranges:
+      // - 10.x.x.x (10.0.0.0/8)
+      // - 172.16.x.x to 172.31.x.x (172.16.0.0/12)
+      // - 192.168.x.x (192.168.0.0/16)
+      const privateIpRegex = /^https?:\/\/(?:10\.\d+\.\d+\.\d+|172\.(?:1[6-9]|2\d|3[01])\.\d+\.\d+|192\.168\.\d+\.\d+)(:\d+)?$/;
+      if (privateIpRegex.test(origin)) {
+        return callback(null, true);
+      }
     }
     
     return callback(new Error('Not allowed by CORS'));
