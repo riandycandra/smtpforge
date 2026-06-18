@@ -1,4 +1,4 @@
-import { EmailJob, ApiKey } from '@mailer/database';
+import { EmailJob, ApiKey, SmtpAccount } from '@mailer/database';
 import { Op } from 'sequelize';
 import { enqueueEmailJob } from './emailProducer.service';
 import { sequelize } from '@mailer/database';
@@ -30,6 +30,10 @@ export async function queryLogs(filters: any, limit: number, offset: number) {
     include: [
       {
         model: ApiKey,
+        attributes: ['name'],
+      },
+      {
+        model: SmtpAccount,
         attributes: ['name'],
       },
     ],

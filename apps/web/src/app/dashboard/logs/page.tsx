@@ -18,6 +18,9 @@ interface EmailLog {
   ApiKey?: {
     name: string;
   };
+  SmtpAccount?: {
+    name: string;
+  };
 }
 
 const STATUS_BADGE: Record<string, { bg: string; text: string; border: string; darkBg: string; darkText: string; darkBorder: string; icon: React.ElementType; label: string }> = {
@@ -211,6 +214,7 @@ export default function LogsDashboardPage() {
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">API Key</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">SMTP Account</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Recipients</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Subject</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Created At</th>
@@ -220,7 +224,7 @@ export default function LogsDashboardPage() {
               <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
                 {logs.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center text-gray-400 dark:text-gray-500 text-sm">No logs found matching criteria.</td>
+                    <td colSpan={7} className="px-6 py-12 text-center text-gray-400 dark:text-gray-500 text-sm">No logs found matching criteria.</td>
                   </tr>
                 )}
                 {logs.map((log) => (
@@ -231,6 +235,11 @@ export default function LogsDashboardPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                       <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 text-gray-700 dark:bg-gray-850 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
                         {log.ApiKey?.name || 'Unknown'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400 border border-blue-200/50 dark:border-blue-900/50">
+                        {log.SmtpAccount?.name || 'Unknown'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
@@ -347,6 +356,14 @@ export default function LogsDashboardPage() {
                   <span className="font-medium text-gray-700 dark:text-gray-300">
                     <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 text-gray-700 dark:bg-gray-850 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
                       {selectedLog.ApiKey?.name || 'Unknown'}
+                    </span>
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="w-16 text-gray-400 dark:text-gray-500 font-medium">SMTP:</span>
+                  <span className="font-medium text-gray-700 dark:text-gray-300">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400 border border-blue-200/50 dark:border-blue-900/50">
+                      {selectedLog.SmtpAccount?.name || 'Unknown'}
                     </span>
                   </span>
                 </div>
