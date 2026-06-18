@@ -9,7 +9,7 @@ import { startWorkerHealthCheck } from './jobs/workerHealthCheck';
 async function bootstrap() {
   try {
     // Establish connections
-    await connectDatabase();
+    await connectDatabase({ sync: true });
     
     // Seed default admin user if none exists
     await seedDefaultAdmin();

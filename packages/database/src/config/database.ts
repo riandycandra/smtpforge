@@ -17,10 +17,12 @@ export const sequelize = new Sequelize({
   },
 });
 
-export async function connectDatabase() {
+export async function connectDatabase(options: { sync?: boolean } = { sync: false }) {
   try {
     await sequelize.authenticate();
-    await sequelize.sync({ alter: true });
+    if (options.sync) {
+      await sequelize.sync({ alter: true });
+    }
     logger.info('Database connection established successfully.');
   } catch (error: unknown) {
     const formattedError = error instanceof Error
