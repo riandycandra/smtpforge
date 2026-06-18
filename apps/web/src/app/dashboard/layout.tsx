@@ -49,9 +49,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               priority
             />
           </div>
-          <span className="text-lg font-bold text-gray-900 dark:text-gray-100">SMTP Forge</span>
+          <span className="text-lg text-gray-900 dark:text-gray-100">
+            <span className="font-bold">SMTP</span> Forge
+          </span>
         </div>
-        
+
         <nav className="flex-1 overflow-y-auto py-4">
           <ul className="space-y-1 px-3">
             {navigation.map((item) => {
@@ -61,11 +63,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <li key={item.name}>
                   <Link
                     href={item.href}
-                    className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
-                      isActive
+                    className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${isActive
                         ? 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-400'
                         : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
-                    }`}
+                      }`}
                   >
                     <Icon className={`mr-3 h-5 w-5 ${isActive ? 'text-blue-700 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'}`} />
                     {item.name}
@@ -111,7 +112,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             )}
           </button>
         </header>
-        
+
         <main className="flex-1 overflow-y-auto p-8 bg-gray-50 dark:bg-gray-950">
           {children}
         </main>
