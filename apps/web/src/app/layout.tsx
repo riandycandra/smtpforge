@@ -7,6 +7,11 @@ import { Toaster } from 'react-hot-toast';
 export const metadata = {
   title: 'SMTP Forge Admin',
   description: 'Transactional Email Platform Administration',
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/icon.png',
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

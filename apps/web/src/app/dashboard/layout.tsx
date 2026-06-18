@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Mail, Key, Activity, Server, LayoutDashboard, LogOut, Settings as SettingsIcon, Sun, Moon, Bell } from 'lucide-react';
 import { AuthService } from '@/services/api/auth.service';
 import { useTheme } from '../theme-provider';
+import Image from 'next/image';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -38,7 +39,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <div className="flex h-screen bg-gray-50 dark:bg-gray-950">
       {/* Sidebar */}
       <div className="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col">
-        <div className="h-16 flex items-center px-6 border-b border-gray-200 dark:border-gray-800">
+        <div className="h-16 flex items-center gap-3 px-5 border-b border-gray-200 dark:border-gray-800">
+          <div className="w-8 h-8 relative rounded-lg overflow-hidden border border-gray-100 dark:border-gray-800 flex-shrink-0">
+            <Image
+              src="/icon.svg"
+              alt="SMTP Forge Logo"
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
           <span className="text-lg font-bold text-gray-900 dark:text-gray-100">SMTP Forge</span>
         </div>
         

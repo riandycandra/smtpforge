@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { AuthService } from '@/services/api/auth.service';
 import { useTheme } from '../theme-provider';
 import { Sun, Moon, ExternalLink } from 'lucide-react';
+import Image from 'next/image';
 
 type AuthStatusResponse = {
   success: boolean;
@@ -121,7 +122,16 @@ export default function LoginPage() {
       </button>
 
       <div className="w-full max-w-md p-8 bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-100 dark:border-gray-800">
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 flex flex-col items-center">
+          <div className="w-16 h-16 relative mb-4 rounded-2xl overflow-hidden shadow-lg border border-gray-100 dark:border-gray-800">
+            <Image
+              src="/icon.svg"
+              alt="SMTP Forge Logo"
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">SMTP Forge</h1>
           <p className="text-gray-500 dark:text-gray-400">Sign in to manage your email service</p>
           <a
