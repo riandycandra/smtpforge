@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { LogsService } from '@/services/api/logs.service';
-import { Mail, Search, RefreshCw, AlertCircle, CheckCircle, Clock, Loader2, RotateCcw, Eye, X, Server, Paperclip, ExternalLink as ExternalLinkIcon } from 'lucide-react';
+import { Mail, Search, RefreshCw, AlertCircle, CheckCircle, Clock, Loader2, RotateCcw, Eye, X, Server, Paperclip, ExternalLink as ExternalLinkIcon, Maximize2, Minimize2, Expand } from 'lucide-react';
 import DOMPurify from 'dompurify';
 
 interface EmailLog {
@@ -74,6 +74,7 @@ export default function LogsDashboardPage() {
   const [statusFilter, setStatusFilter] = useState('');
   const [search, setSearch] = useState('');
   const [selectedLog, setSelectedLog] = useState<EmailLog | null>(null);
+  const [viewMode, setViewMode] = useState<'normal' | 'wide' | 'fullscreen'>('normal');
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -128,6 +129,7 @@ export default function LogsDashboardPage() {
       dialogRef.current.showModal();
     } else if (!selectedLog && dialogRef.current) {
       dialogRef.current.close();
+      setViewMode('normal');
     }
   }, [selectedLog]);
 
@@ -309,7 +311,13 @@ export default function LogsDashboardPage() {
         id="log-details-dialog"
         ref={dialogRef}
         onClose={() => setSelectedLog(null)}
-        className="m-auto rounded-3xl shadow-2xl w-full max-w-5xl h-[85vh] p-0 bg-white dark:bg-gray-900 border-none overflow-hidden outline-none open:flex open:flex-col inset-ring inset-ring-gray-900/5 dark:inset-ring-white/5"
+        className={`shadow-2xl w-full p-0 bg-white dark:bg-gray-900 border-none overflow-hidden outline-none open:flex open:flex-col inset-ring inset-ring-gray-900/5 dark:inset-ring-white/5 transition-all duration-300 ${
+          viewMode === 'fullscreen'
+            ? 'max-w-none w-screen h-screen rounded-none m-0'
+            : viewMode === 'wide'
+            ? 'max-w-7xl w-[95vw] h-[90vh] rounded-3xl m-auto'
+            : 'max-w-5xl w-full h-[85vh] rounded-3xl m-auto'
+        }`}
       >
         {selectedLog && (
           <>
@@ -329,13 +337,52 @@ export default function LogsDashboardPage() {
                 <div className="h-6 w-px bg-gray-200 dark:bg-gray-700 mx-2" />
                 <StatusBadge status={selectedLog.status} />
               </div>
-              <button
-                type="button"
-                onClick={() => setSelectedLog(null)}
-                className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors text-gray-500 dark:text-gray-400 active:scale-95"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  title="Normal View"
+                  onClick={() => setViewMode('normal')}
+                  className={`p-2 rounded-lg transition-colors active:scale-95 ${
+                    viewMode === 'normal'
+                      ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                      : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400'
+                  }`}
+                >
+                  <Minimize2 className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  title="Wide View"
+                  onClick={() => setViewMode('wide')}
+                  className={`p-2 rounded-lg transition-colors active:scale-95 ${
+                    viewMode === 'wide'
+                      ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                      : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400'
+                  }`}
+                >
+                  <Expand className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  title="Fullscreen View"
+                  onClick={() => setViewMode('fullscreen')}
+                  className={`p-2 rounded-lg transition-colors active:scale-95 ${
+                    viewMode === 'fullscreen'
+                      ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                      : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400'
+                  }`}
+                >
+                  <Maximize2 className="w-4 h-4" />
+                </button>
+                <div className="h-5 w-px bg-gray-200 dark:bg-gray-700 mx-1" />
+                <button
+                  type="button"
+                  onClick={() => setSelectedLog(null)}
+                  className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors text-gray-500 dark:text-gray-400 active:scale-95"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
             {/* Email Header Area */}
