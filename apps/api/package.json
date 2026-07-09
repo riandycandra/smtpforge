@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "dev": "tsx watch src/index.ts",
     "test:integration": "pnpm --filter @mailer/shared build && pnpm --filter @mailer/database build && pnpm build && node --test test/integration/api.integration.test.js"
   },
   "dependencies": {
@@ -43,7 +43,7 @@
     "@types/nodemailer": "^6.4.14",
     "@types/swagger-ui-express": "^4.1.8",
     "@types/uuid": "^9.0.8",
-    "ts-node-dev": "^2.0.0",
+    "tsx": "^4.19.3",
     "typescript": "^5.4.0"
   }
 }
