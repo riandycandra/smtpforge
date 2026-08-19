@@ -46,3 +46,5 @@ coverage/
 
 # Data volumes
 data/
+
+/graphify-out

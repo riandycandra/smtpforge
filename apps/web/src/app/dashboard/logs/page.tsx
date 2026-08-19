@@ -75,7 +75,19 @@ export default function LogsDashboardPage() {
   const [search, setSearch] = useState('');
   const [selectedLog, setSelectedLog] = useState<EmailLog | null>(null);
   const [viewMode, setViewMode] = useState<'normal' | 'wide' | 'fullscreen'>('normal');
+  const [isPreviewFullscreen, setIsPreviewFullscreen] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsPreviewFullscreen(document.fullscreenElement === previewRef.current);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -128,10 +140,28 @@ export default function LogsDashboardPage() {
     if (selectedLog && dialogRef.current) {
       dialogRef.current.showModal();
     } else if (!selectedLog && dialogRef.current) {
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+      }
       dialogRef.current.close();
       setViewMode('normal');
+      setIsPreviewFullscreen(false);
     }
   }, [selectedLog]);
+
+  const togglePreviewFullscreen = async () => {
+    if (!previewRef.current) return;
+    try {
+      if (!document.fullscreenElement) {
+        await previewRef.current.requestFullscreen();
+      } else {
+        await document.exitFullscreen();
+      }
+    } catch (err) {
+      console.error('Fullscreen toggle failed:', err);
+      setIsPreviewFullscreen((prev) => !prev);
+    }
+  };
 
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
@@ -452,12 +482,51 @@ export default function LogsDashboardPage() {
             <div className="flex-1 overflow-hidden flex bg-gray-50 dark:bg-gray-950">
               <div className="flex-1 flex flex-col p-6 overflow-y-auto space-y-6">
                 {/* Main Content Card */}
-                <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden flex-1 min-h-[500px] flex flex-col inset-ring inset-ring-gray-900/5 dark:inset-ring-white/5">
-                  <div className="px-4 py-2 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Content Preview</span>
-                    <span className="text-[10px] text-gray-400 dark:text-gray-500 flex items-center gap-1">
-                      <Clock className="w-3 h-3 mr-2" /> Sandboxed
-                    </span>
+                <div
+                  ref={previewRef}
+                  className={`bg-white dark:bg-gray-900 overflow-hidden flex flex-col transition-all duration-300 ${
+                    isPreviewFullscreen
+                      ? 'fixed inset-0 z-50 h-screen w-screen rounded-none border-none p-0'
+                      : 'rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 flex-1 min-h-[500px] inset-ring inset-ring-gray-900/5 dark:inset-ring-white/5'
+                  }`}
+                >
+                  <div className="px-4 py-2.5 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+                        Content Preview
+                      </span>
+                      {isPreviewFullscreen && selectedLog?.subject && (
+                        <>
+                          <div className="h-3 w-px bg-gray-200 dark:bg-gray-700" />
+                          <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 truncate max-w-md">
+                            {selectedLog.subject}
+                          </span>
+                        </>
+                      )}
+                      <span className="text-[10px] text-gray-400 dark:text-gray-500 flex items-center gap-1">
+                        <Clock className="w-3 h-3 mr-1" /> Sandboxed
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        title={isPreviewFullscreen ? 'Exit fullscreen preview' : 'Fullscreen preview'}
+                        onClick={togglePreviewFullscreen}
+                        className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors text-gray-500 dark:text-gray-400 active:scale-95 flex items-center gap-1.5 text-xs font-medium"
+                      >
+                        {isPreviewFullscreen ? (
+                          <>
+                            <Minimize2 className="w-3.5 h-3.5" />
+                            <span className="hidden sm:inline">Exit Fullscreen</span>
+                          </>
+                        ) : (
+                          <>
+                            <Maximize2 className="w-3.5 h-3.5" />
+                            <span className="hidden sm:inline">Fullscreen</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
                   <iframe
                     title="Email Preview"
