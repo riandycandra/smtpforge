@@ -1,7 +1,25 @@
 import { EmailJob } from '@mailer/database';
-import { EMAIL_STATUS } from '@mailer/shared';
+import { EMAIL_STATUS, EmailStatus } from '@mailer/shared';
 import { emailQueue } from '../config/queue';
 import { Op, fn, col } from 'sequelize';
+
+interface JobStatQueryResult {
+  status: EmailStatus;
+  count: string | number;
+  avg_latency?: string | number | null;
+}
+
+interface TimeSeriesStatQueryResult {
+  time: string | Date;
+  status: EmailStatus;
+  count: string | number;
+}
+
+interface TimeSeriesDataPoint {
+  time: string;
+  success: number;
+  failed: number;
+}
 
 export async function getDashboardMetrics() {
   // 1. Queue Depth (from BullMQ)
@@ -24,7 +42,7 @@ export async function getDashboardMetrics() {
     },
     group: ['status'],
     raw: true,
-  }) as any[];
+  }) as unknown as JobStatQueryResult[];
 
   let successCount = 0;
   let failedCount = 0;
@@ -32,7 +50,7 @@ export async function getDashboardMetrics() {
   let latencyCount = 0;
 
   stats.forEach((stat) => {
-    const count = parseInt(stat.count, 10);
+    const count = typeof stat.count === 'number' ? stat.count : parseInt(String(stat.count), 10);
     if (stat.status === EMAIL_STATUS.SENT) {
       successCount = count;
     } else if (stat.status === EMAIL_STATUS.FAILED) {
@@ -40,7 +58,8 @@ export async function getDashboardMetrics() {
     }
     
     if (stat.avg_latency) {
-      totalLatency += parseFloat(stat.avg_latency) * count;
+      const avgLat = typeof stat.avg_latency === 'number' ? stat.avg_latency : parseFloat(String(stat.avg_latency));
+      totalLatency += avgLat * count;
       latencyCount += count;
     }
   });
@@ -71,7 +90,7 @@ export async function getPlatformMetrics() {
     ],
     group: ['status'],
     raw: true,
-  }) as any[];
+  }) as unknown as JobStatQueryResult[];
 
   let totalSent = 0;
   let totalFailed = 0;
@@ -79,7 +98,7 @@ export async function getPlatformMetrics() {
   let latencyCount = 0;
 
   stats.forEach((stat) => {
-    const count = parseInt(stat.count, 10);
+    const count = typeof stat.count === 'number' ? stat.count : parseInt(String(stat.count), 10);
     if (stat.status === EMAIL_STATUS.SENT) {
       totalSent = count;
     } else if (stat.status === EMAIL_STATUS.FAILED) {
@@ -87,7 +106,8 @@ export async function getPlatformMetrics() {
     }
     
     if (stat.avg_latency) {
-      totalLatency += parseFloat(stat.avg_latency) * count;
+      const avgLat = typeof stat.avg_latency === 'number' ? stat.avg_latency : parseFloat(String(stat.avg_latency));
+      totalLatency += avgLat * count;
       latencyCount += count;
     }
   });
@@ -128,17 +148,17 @@ export async function getTimeSeriesMetrics(precision: 'day' | 'month' | 'year' =
     group: [fn('date_trunc', precision, col('created_at')), 'status'],
     order: [[fn('date_trunc', precision, col('created_at')), 'ASC']],
     raw: true,
-  }) as any[];
+  }) as unknown as TimeSeriesStatQueryResult[];
 
   // Format data for the chart
-  const dataMap: Record<string, any> = {};
+  const dataMap: Record<string, TimeSeriesDataPoint> = {};
   stats.forEach((stat) => {
     const time = stat.time; // stat.time is already a Date object or string from date_trunc
     const timeStr = new Date(time).toISOString();
     if (!dataMap[timeStr]) {
       dataMap[timeStr] = { time: timeStr, success: 0, failed: 0 };
     }
-    const count = parseInt(stat.count, 10);
+    const count = typeof stat.count === 'number' ? stat.count : parseInt(String(stat.count), 10);
     if (stat.status === EMAIL_STATUS.SENT) {
       dataMap[timeStr].success = count;
     } else if (stat.status === EMAIL_STATUS.FAILED) {
