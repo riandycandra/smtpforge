@@ -51,9 +51,3 @@ export function startWorkerHealthCheck(intervalMs = 60000) { // Default 1 minute
   healthCheckInterval = setInterval(checkWorkerHealth, intervalMs);
 }
 
-export function stopWorkerHealthCheck() {
-  if (healthCheckInterval) {
-    clearInterval(healthCheckInterval);
-    healthCheckInterval = null;
-  }
-}
