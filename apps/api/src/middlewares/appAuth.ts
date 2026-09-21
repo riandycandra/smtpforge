@@ -5,13 +5,19 @@ import { hashApiKey, compareApiKey } from '../utils/apiKey';
 
 export async function requireAppAuth(req: Request, res: Response, next: NextFunction) {
   const apiKeyHeader = req.headers['x-mailer-api-key'];
+  const apiKeyQuery = req.query.api_key || req.query.apiKey;
+  const rawApiKey = (typeof apiKeyHeader === 'string' && apiKeyHeader.trim())
+    ? apiKeyHeader.trim()
+    : (typeof apiKeyQuery === 'string' && apiKeyQuery.trim())
+      ? apiKeyQuery.trim()
+      : null;
 
-  if (!apiKeyHeader || typeof apiKeyHeader !== 'string') {
-    return sendError(res, 'Missing or invalid X-Mailer-Api-Key header', [], 401);
+  if (!rawApiKey) {
+    return sendError(res, 'Missing or invalid API Key (provide via X-Mailer-Api-Key header or api_key query parameter)', [], 401);
   }
 
   try {
-    const hashedKey = hashApiKey(apiKeyHeader);
+    const hashedKey = hashApiKey(rawApiKey);
     
     // We search by the hash, as the hash is deterministic
     const apiKeyRecord = await ApiKey.findOne({

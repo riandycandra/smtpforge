@@ -35,6 +35,29 @@ export interface QueueJobResult {
   status: EmailStatus;
   messageId?: string;
   smtpResponse?: string;
+  latencyMs?: number;
   error?: string;
+}
+
+export type EmailProgressStep =
+  | 'queued'
+  | 'preparing'
+  | 'connecting_smtp'
+  | 'sending'
+  | 'delivered'
+  | 'retrying'
+  | 'failed';
+
+export interface EmailProgressData {
+  job_id: string;
+  email_job_id?: string;
+  status: EmailStatus;
+  step: EmailProgressStep;
+  percentage: number;
+  message: string;
+  latency_ms?: number | null;
+  smtp_response?: string | null;
+  error?: string | null;
+  timestamp: string;
 }
 

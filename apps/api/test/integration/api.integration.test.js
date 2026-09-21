@@ -167,6 +167,45 @@ test('API integration flow covers admin and public APIs', async () => {
     assert.equal(queuedEmail.body.data.status, 'queued');
     assert.ok(queuedEmail.body.data.job_id);
 
+    const progressJobId = queuedEmail.body.data.job_id;
+
+    // Test SSE progress with header auth
+    const sseResponse = await fetch(`${baseUrl}/api/v1/emails/${progressJobId}/progress`, {
+      headers: { 'X-Mailer-Api-Key': publicApiKey },
+    });
+    assert.equal(sseResponse.status, 200);
+    assert.match(sseResponse.headers.get('content-type') || '', /text\/event-stream/);
+    const reader = sseResponse.body.getReader();
+    const { value } = await reader.read();
+    const textChunk = new TextDecoder().decode(value);
+    assert.match(textChunk, /event: progress/);
+    assert.match(textChunk, /"status":"queued"/);
+    await reader.cancel();
+
+    // Test SSE progress with query param auth
+    const sseQueryResponse = await fetch(`${baseUrl}/api/v1/emails/${progressJobId}/progress?api_key=${publicApiKey}`);
+    assert.equal(sseQueryResponse.status, 200);
+    assert.match(sseQueryResponse.headers.get('content-type') || '', /text\/event-stream/);
+    const queryReader = sseQueryResponse.body.getReader();
+    const queryChunk = await queryReader.read();
+    assert.match(new TextDecoder().decode(queryChunk.value), /event: progress/);
+    await queryReader.cancel();
+
+    // Test SSE progress 404 for invalid job
+    const invalidSse = await request('GET', '/api/v1/emails/invalid-uuid-job/progress', { apiKey: publicApiKey });
+    assert.equal(invalidSse.status, 404);
+
+    // Test SSE completed state when DB record is already sent
+    const { EmailJob } = require('@mailer/database');
+    await EmailJob.update({ status: 'sent', sent_at: new Date() }, { where: { job_id: progressJobId } });
+    const sseCompletedResponse = await fetch(`${baseUrl}/api/v1/emails/${progressJobId}/progress`, {
+      headers: { 'X-Mailer-Api-Key': publicApiKey },
+    });
+    assert.equal(sseCompletedResponse.status, 200);
+    const completedText = await sseCompletedResponse.text();
+    assert.match(completedText, /event: completed/);
+    assert.match(completedText, /"status":"sent"/);
+
     const logs = await request('GET', '/api/v1/admin/logs?recipient=recipient@example.com', {
       token: adminToken,
     });
@@ -352,6 +391,16 @@ async function cleanupRuntime() {
     }
 
     await withTimeout(emailQueue.close(), 2000).catch(() => emailQueue.disconnect());
+
+    try {
+      const { emailQueueEvents } = require('../../dist/services/emailProgress.service');
+      if (emailQueueEvents) {
+        await withTimeout(emailQueueEvents.close(), 2000).catch(() => {});
+      }
+    } catch {
+      // Ignored if not loaded
+    }
+
     redisClient.disconnect();
   } catch {
     // The test may fail before Redis-backed modules load.

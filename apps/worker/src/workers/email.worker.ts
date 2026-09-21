@@ -37,6 +37,26 @@ export function createEmailWorker() {
         emailJobRecord.status = EMAIL_STATUS.PROCESSING;
         await emailJobRecord.save();
 
+        await job.updateProgress({
+          job_id: job.id,
+          email_job_id: emailJobRecord.id,
+          status: EMAIL_STATUS.PROCESSING,
+          step: 'preparing',
+          percentage: 25,
+          message: 'Preparing email and validating credentials',
+          timestamp: new Date().toISOString(),
+        });
+
+        await job.updateProgress({
+          job_id: job.id,
+          email_job_id: emailJobRecord.id,
+          status: EMAIL_STATUS.PROCESSING,
+          step: 'connecting_smtp',
+          percentage: 50,
+          message: 'Connecting to SMTP server and transmitting message',
+          timestamp: new Date().toISOString(),
+        });
+
         const startLatency = Date.now();
         const result = await sendEmailService(payload);
         const latencyMs = Date.now() - startLatency;
@@ -49,9 +69,26 @@ export function createEmailWorker() {
         emailJobRecord.error_message = null;
         await emailJobRecord.save();
 
+        await job.updateProgress({
+          job_id: job.id,
+          email_job_id: emailJobRecord.id,
+          status: EMAIL_STATUS.SENT,
+          step: 'delivered',
+          percentage: 100,
+          message: 'Email delivered successfully',
+          latency_ms: latencyMs,
+          smtp_response: result.response,
+          timestamp: new Date().toISOString(),
+        });
+
         emailJobsCompletedCounter.inc();
 
-        return { status: EMAIL_STATUS.SENT, messageId: result.messageId };
+        return {
+          status: EMAIL_STATUS.SENT,
+          messageId: result.messageId,
+          smtpResponse: result.response,
+          latencyMs,
+        };
 
       } catch (error: any) {
         if (emailJobRecord) {
@@ -63,6 +100,17 @@ export function createEmailWorker() {
             emailJobRecord.error_message = error.message;
             await emailJobRecord.save();
             emailJobsFailedCounter.inc();
+
+            await job.updateProgress({
+              job_id: job.id,
+              email_job_id: emailJobRecord.id,
+              status: EMAIL_STATUS.FAILED,
+              step: 'failed',
+              percentage: 100,
+              message: `Delivery failed (non-retryable): ${error.message}`,
+              error: error.message,
+              timestamp: new Date().toISOString(),
+            });
             
             // We don't want BullMQ to retry this, so we throw a specific error or just return failed
             // But returning a value marks job as completed in BullMQ.
@@ -77,6 +125,18 @@ export function createEmailWorker() {
             emailJobRecord.error_message = error.message;
             await emailJobRecord.save();
             emailJobsRetryCounter.inc();
+
+            await job.updateProgress({
+              job_id: job.id,
+              email_job_id: emailJobRecord.id,
+              status: EMAIL_STATUS.RETRYING,
+              step: 'retrying',
+              percentage: 0,
+              message: `Delivery failed, retrying (attempt ${emailJobRecord.retry_count}): ${error.message}`,
+              error: error.message,
+              timestamp: new Date().toISOString(),
+            });
+
             throw error;
           }
         }

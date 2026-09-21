@@ -4,7 +4,9 @@ import { validate } from '../../validators/validate';
 import { validateSmtpPermission } from '../../middlewares/smtpPermission';
 import { sendSuccess, sendError } from '../../utils/response';
 import { enqueueEmailJob } from '../../services/emailProducer.service';
-import { SmtpAccount, ApiKeySmtpPermission } from '@mailer/database';
+import { SmtpAccount, ApiKeySmtpPermission, EmailJob } from '@mailer/database';
+import { Op } from 'sequelize';
+import { streamEmailProgress } from '../../services/emailProgress.service';
 
 const router = Router();
 
@@ -123,6 +125,38 @@ router.post(
         job_id: emailJob.job_id,
         status: emailJob.status,
       }, 202);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.get(
+  '/:job_id/progress',
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const apiKeyId = req.appAuth!.id;
+      const { job_id } = req.params;
+
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(job_id);
+
+      const emailJob = await EmailJob.findOne({
+        where: isUuid
+          ? {
+              [Op.or]: [{ job_id }, { id: job_id }],
+              api_key_id: apiKeyId,
+            }
+          : {
+              job_id,
+              api_key_id: apiKeyId,
+            },
+      });
+
+      if (!emailJob) {
+        return sendError(res, 'Email job not found or unauthorized', [], 404);
+      }
+
+      await streamEmailProgress(req, res, emailJob);
     } catch (error) {
       next(error);
     }
