@@ -6,7 +6,23 @@ const openApiSpec = {
   info: {
     title: 'SMTP Forge Public API',
     version: '1.0.0',
-    description: 'Public API for sending email through SMTP Forge and discovering SMTP accounts available to an API key.',
+    description: [
+      'Public API for sending email through SMTP Forge and discovering SMTP accounts available to an API key.',
+      '',
+      '### Authentication',
+      'All public API endpoints require an API key generated from the SMTP Forge dashboard (under **API Keys**).',
+      '',
+      'Pass your API key as an HTTP request header on every request:',
+      '```http',
+      'X-Mailer-Api-Key: <your_api_key>',
+      '```',
+      '',
+      '**Testing via Swagger UI:**',
+      'Click the green **Authorize** 🔓 button at the top right of this page (or the lock icon next to any endpoint) and enter your key. Swagger UI will automatically attach the `X-Mailer-Api-Key` header to all requests when you use **Try it out**.',
+      '',
+      '**Browser EventSource (SSE) Alternative:**',
+      'For browser `EventSource` clients that cannot set custom HTTP headers, the `/emails/{job_id}/progress` endpoint also accepts the key as a query parameter (`?api_key=<your_api_key>`).',
+    ].join('\n'),
   },
   servers: [
     {
@@ -30,7 +46,8 @@ const openApiSpec = {
         type: 'apiKey',
         in: 'header',
         name: 'X-Mailer-Api-Key',
-        description: 'Public API key generated from the SMTP Forge dashboard.',
+        description:
+          'Public API key generated from the SMTP Forge dashboard. Provide this key in the `X-Mailer-Api-Key` HTTP header. In Swagger UI, click the "Authorize" button to set this key for all requests.',
       },
       MailerApiKeyQuery: {
         type: 'apiKey',
@@ -228,7 +245,12 @@ const openApiSpec = {
       post: {
         tags: ['Emails'],
         summary: 'Send an email',
-        description: 'Queues an outbound email for delivery. Attachments must be referenced by a publicly reachable URL.',
+        description: [
+          'Queues an outbound email for delivery. Attachments must be referenced by a publicly reachable URL.',
+          '',
+          '**Required Request Header:**',
+          '- `X-Mailer-Api-Key`: Your public API key from the dashboard. When testing with "Try it out", click the **Authorize** 🔓 button at the top to set this header.',
+        ].join('\n'),
         operationId: 'sendEmail',
         requestBody: {
           required: true,
@@ -288,7 +310,13 @@ const openApiSpec = {
       get: {
         tags: ['Emails'],
         summary: 'Stream email delivery progress (SSE)',
-        description: 'Subscribes to real-time Server-Sent Events (SSE) tracking the status and step transitions of a queued email. Closes automatically upon reaching terminal status (sent or failed). Supports authentication via X-Mailer-Api-Key header or api_key query parameter for browser EventSource compatibility.',
+        description: [
+          'Subscribes to real-time Server-Sent Events (SSE) tracking the status and step transitions of a queued email. Closes automatically upon reaching terminal status (sent or failed).',
+          '',
+          '**Authentication Options:**',
+          '- `X-Mailer-Api-Key` HTTP Header (recommended for backend clients)',
+          '- `api_key` Query Parameter (alternative for browser EventSource / frontend clients that cannot set custom HTTP headers)',
+        ].join('\n'),
         operationId: 'streamEmailProgress',
         parameters: [
           {
@@ -349,7 +377,12 @@ const openApiSpec = {
       get: {
         tags: ['SMTP Accounts'],
         summary: 'List SMTP accounts',
-        description: 'Returns SMTP accounts the current API key may use. If no specific permissions are configured, all active accounts are returned.',
+        description: [
+          'Returns SMTP accounts the current API key may use. If no specific permissions are configured, all active accounts are returned.',
+          '',
+          '**Required Request Header:**',
+          '- `X-Mailer-Api-Key`: Your public API key from the dashboard. When testing with "Try it out", click the **Authorize** 🔓 button at the top to set this header.',
+        ].join('\n'),
         operationId: 'listSmtpAccounts',
         responses: {
           '200': {
@@ -400,4 +433,7 @@ docsRouter.use('/', swaggerUi.serve);
 docsRouter.get('/', swaggerUi.setup(openApiSpec, {
   customSiteTitle: 'SMTP Forge API Docs',
   customCss: '.swagger-ui .topbar { display: none }',
+  swaggerOptions: {
+    persistAuthorization: true,
+  },
 }));
