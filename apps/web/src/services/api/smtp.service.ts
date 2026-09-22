@@ -37,5 +37,17 @@ export const SmtpService = {
 
   testDraftConnection: async (data: SmtpDraftConnectionPayload): Promise<unknown> => {
     return apiClient.post('/admin/smtp/test', data);
+  },
+
+  sendTestEmail: async (id: string, to: string) => {
+    return apiClient.post(`/admin/smtp/${id}/send-test`, { to });
+  },
+
+  checkHealth: async (id?: string) => {
+    if (id) {
+      return apiClient.post(`/admin/smtp/${id}/health-check`);
+    }
+    return apiClient.post('/admin/smtp/health-check');
   }
 };
+

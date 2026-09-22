@@ -5,7 +5,7 @@ import { EMAIL_STATUS, EmailStatus } from '@mailer/shared';
 interface EmailJobAttributes {
   id: string;
   job_id: string;
-  api_key_id: string;
+  api_key_id: string | null;
   smtp_account_id: string;
   to: string[];
   cc: string[] | null;
@@ -23,12 +23,12 @@ interface EmailJobAttributes {
   updated_at?: Date;
 }
 
-interface EmailJobCreationAttributes extends Optional<EmailJobAttributes, 'id' | 'cc' | 'bcc' | 'attachments' | 'error_message' | 'smtp_response' | 'retry_count' | 'latency_ms' | 'sent_at'> {}
+interface EmailJobCreationAttributes extends Optional<EmailJobAttributes, 'id' | 'api_key_id' | 'cc' | 'bcc' | 'attachments' | 'error_message' | 'smtp_response' | 'retry_count' | 'latency_ms' | 'sent_at'> {}
 
 export class EmailJob extends Model<EmailJobAttributes, EmailJobCreationAttributes> implements EmailJobAttributes {
   declare id: string;
   declare job_id: string;
-  declare api_key_id: string;
+  declare api_key_id: string | null;
   declare smtp_account_id: string;
   declare to: string[];
   declare cc: string[] | null;
@@ -59,7 +59,7 @@ EmailJob.init({
   },
   api_key_id: {
     type: DataTypes.UUID,
-    allowNull: false,
+    allowNull: true,
   },
   smtp_account_id: {
     type: DataTypes.UUID,

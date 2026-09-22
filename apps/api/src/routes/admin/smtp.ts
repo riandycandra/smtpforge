@@ -79,6 +79,69 @@ router.delete('/:id', async (req: Request, res: Response, next: NextFunction) =>
   }
 });
 
+import { body } from 'express-validator';
+
+router.post('/health-check', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const summary = await smtpService.checkAllAccountsHealth();
+    logger.info('Admin Action: SMTP Bulk Health Check triggered', {
+      adminId: req.adminAuth?.userId,
+      total: summary.total,
+      healthy: summary.healthy,
+      unhealthy: summary.unhealthy,
+    });
+    return sendSuccess(res, summary);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/:id/health-check', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await smtpService.checkAccountHealth(req.params.id);
+    logger.info('Admin Action: SMTP Single Health Check triggered', {
+      adminId: req.adminAuth?.userId,
+      entityId: req.params.id,
+      status: result.health_status,
+    });
+    return sendSuccess(res, result);
+  } catch (error: any) {
+    if (error.message === 'SMTP Account not found') {
+      return sendError(res, 'SMTP Account not found', [], 404);
+    }
+    next(error);
+  }
+});
+
+router.post(
+  '/:id/send-test',
+  body('to').isEmail().withMessage('Valid recipient email address is required'),
+  validate,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await smtpService.sendTestEmail(req.params.id, req.body.to);
+      logger.info('Admin Action: SMTP live test email sent', {
+        adminId: req.adminAuth?.userId,
+        entityId: req.params.id,
+        to: req.body.to,
+        success: result.success,
+        latency: result.latency_ms,
+      });
+
+      if (!result.success) {
+        return sendError(res, result.error || 'Failed to send test email', [{ latency: result.latency_ms }], 400);
+      }
+
+      return sendSuccess(res, result);
+    } catch (error: any) {
+      if (error.message === 'SMTP Account not found') {
+        return sendError(res, 'SMTP Account not found', [], 404);
+      }
+      next(error);
+    }
+  }
+);
+
 router.post('/:id/test', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await smtpService.testSmtpConnection(req.params.id);
@@ -96,3 +159,4 @@ router.post('/:id/test', async (req: Request, res: Response, next: NextFunction)
 });
 
 export const adminSmtpRouter = router;
+

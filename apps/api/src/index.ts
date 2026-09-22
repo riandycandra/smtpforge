@@ -5,6 +5,7 @@ import { redisClient } from './config/redis';
 import { logger } from './utils/logger';
 import { seedDefaultAdmin } from './routes/admin/auth';
 import { startWorkerHealthCheck } from './jobs/workerHealthCheck';
+import { startSmtpHealthCheck } from './jobs/smtpHealthCheck';
 
 async function bootstrap() {
   try {
@@ -20,6 +21,7 @@ async function bootstrap() {
 
     // Start background jobs
     startWorkerHealthCheck();
+    startSmtpHealthCheck();
 
     // Start server
     app.listen(env.PORT, () => {

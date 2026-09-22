@@ -15,11 +15,15 @@ interface SmtpAccountAttributes {
   rate_limit_per_hour: number | null;
   is_active: boolean;
   ignore_tls_errors: boolean;
+  health_status?: 'healthy' | 'unhealthy' | 'untested';
+  last_health_check_at?: Date | null;
+  last_health_error?: string | null;
+  last_health_latency_ms?: number | null;
   created_at?: Date;
   updated_at?: Date;
 }
 
-interface SmtpAccountCreationAttributes extends Optional<SmtpAccountAttributes, 'id' | 'secure' | 'retry_attempts' | 'is_active' | 'from_name' | 'rate_limit_per_hour' | 'ignore_tls_errors'> {}
+interface SmtpAccountCreationAttributes extends Optional<SmtpAccountAttributes, 'id' | 'secure' | 'retry_attempts' | 'is_active' | 'from_name' | 'rate_limit_per_hour' | 'ignore_tls_errors' | 'health_status' | 'last_health_check_at' | 'last_health_error' | 'last_health_latency_ms'> {}
 
 export class SmtpAccount extends Model<SmtpAccountAttributes, SmtpAccountCreationAttributes> implements SmtpAccountAttributes {
   declare id: string;
@@ -35,6 +39,10 @@ export class SmtpAccount extends Model<SmtpAccountAttributes, SmtpAccountCreatio
   declare rate_limit_per_hour: number | null;
   declare is_active: boolean;
   declare ignore_tls_errors: boolean;
+  declare health_status: 'healthy' | 'unhealthy' | 'untested';
+  declare last_health_check_at: Date | null;
+  declare last_health_error: string | null;
+  declare last_health_latency_ms: number | null;
   declare created_at: Date;
   declare updated_at: Date;
 }
@@ -97,6 +105,23 @@ SmtpAccount.init({
     type: DataTypes.BOOLEAN,
     allowNull: false,
     defaultValue: false,
+  },
+  health_status: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: 'untested',
+  },
+  last_health_check_at: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+  last_health_error: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  last_health_latency_ms: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
   },
 }, {
   sequelize,

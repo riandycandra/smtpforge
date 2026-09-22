@@ -11,7 +11,7 @@ export interface EmailAttachment {
 export interface EmailJobPayload {
   email_job_id: string; // The UUID from the DB
   smtp_account_id: string;
-  api_key_id: string;
+  api_key_id: string | null;
   request_id?: string; // Distributed tracing correlation
   to: string[];
   cc?: string[];

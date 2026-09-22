@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { SmtpService } from '@/services/api/smtp.service';
-import { ArrowLeft, Trash2, Plug } from 'lucide-react';
+import { ArrowLeft, Trash2, Plug, Send, CheckCircle, AlertTriangle, Clock, Activity } from 'lucide-react';
 import Link from 'next/link';
+import { SendTestEmailModal } from '@/components/smtp/SendTestEmailModal';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Name is required').max(255),
@@ -34,6 +35,8 @@ export default function EditSmtpPage() {
   const [loading, setLoading] = useState(true);
   const [testingConnection, setTestingConnection] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [accountDetails, setAccountDetails] = useState<any | null>(null);
+  const [isSendTestOpen, setIsSendTestOpen] = useState(false);
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm({
     resolver: zodResolver(formSchema),
@@ -53,35 +56,37 @@ export default function EditSmtpPage() {
     }
   });
 
-  useEffect(() => {
-    const fetchAccount = async () => {
-      try {
-        const res: any = await SmtpService.getAccount(id);
-        if (res.success) {
-          const data = res.data;
-          reset({
-            name: data.name,
-            host: data.host,
-            port: data.port,
-            secure: data.secure,
-            username: data.username,
-            password: '', // Do not populate password
-            from_email: data.from_email,
-            from_name: data.from_name || '',
-            retry_attempts: data.retry_attempts,
-            rate_limit_per_hour: data.rate_limit_per_hour || '',
-            is_active: data.is_active,
-            ignore_tls_errors: data.ignore_tls_errors || false,
-          });
-        }
-      } catch (err: any) {
-        setError('Failed to load SMTP account.');
-      } finally {
-        setLoading(false);
+  const fetchAccount = useCallback(async () => {
+    try {
+      const res: any = await SmtpService.getAccount(id);
+      if (res.success) {
+        const data = res.data;
+        setAccountDetails(data);
+        reset({
+          name: data.name,
+          host: data.host,
+          port: data.port,
+          secure: data.secure,
+          username: data.username,
+          password: '', // Do not populate password
+          from_email: data.from_email,
+          from_name: data.from_name || '',
+          retry_attempts: data.retry_attempts,
+          rate_limit_per_hour: data.rate_limit_per_hour || '',
+          is_active: data.is_active,
+          ignore_tls_errors: data.ignore_tls_errors || false,
+        });
       }
-    };
-    fetchAccount();
+    } catch (err: any) {
+      setError('Failed to load SMTP account.');
+    } finally {
+      setLoading(false);
+    }
   }, [id, reset]);
+
+  useEffect(() => {
+    fetchAccount();
+  }, [fetchAccount]);
 
   const onSubmit = async (data: any) => {
     try {
@@ -101,6 +106,10 @@ export default function EditSmtpPage() {
       const res: any = await SmtpService.updateAccount(id, payload);
       if (res.success) {
         setSuccess('SMTP Account updated successfully.');
+        const updatedRes: any = await SmtpService.getAccount(id);
+        if (updatedRes.success) {
+          setAccountDetails(updatedRes.data);
+        }
       }
     } catch (err: any) {
       setError(err.message || 'Failed to update SMTP account');
@@ -115,6 +124,10 @@ export default function EditSmtpPage() {
       const res: any = await SmtpService.testConnection(id);
       if (res.success) {
         setSuccess(`Connection successful! Latency: ${res.data.latency_ms}ms`);
+        const updatedRes: any = await SmtpService.getAccount(id);
+        if (updatedRes.success) {
+          setAccountDetails(updatedRes.data);
+        }
       }
     } catch (err: any) {
       setError(`Connection test failed: ${err.message || 'Unknown error'}`);
@@ -144,26 +157,36 @@ export default function EditSmtpPage() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 mb-12">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="flex items-center">
           <Link href="/dashboard/smtp" className="mr-4 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400">
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Manage SMTP Account</h1>
         </div>
-        <div className="flex space-x-3">
+        <div className="flex flex-wrap items-center gap-2.5">
           <button
+            type="button"
+            onClick={() => setIsSendTestOpen(true)}
+            className="flex items-center px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium shadow-xs transition-colors"
+          >
+            <Send className="w-4 h-4 mr-2" />
+            Send Test Email
+          </button>
+          <button
+            type="button"
             onClick={handleTestConnection}
             disabled={testingConnection}
-            className="flex items-center px-4 py-2 border border-blue-600 dark:border-blue-500 text-blue-600 dark:text-blue-400 rounded hover:bg-blue-50 dark:hover:bg-blue-950 text-sm font-medium disabled:opacity-50"
+            className="flex items-center px-3.5 py-2 border border-blue-600 dark:border-blue-500 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950 text-sm font-medium disabled:opacity-50 transition-colors"
           >
             <Plug className="w-4 h-4 mr-2" />
             {testingConnection ? 'Testing...' : 'Test Connection'}
           </button>
           <button
+            type="button"
             onClick={handleDelete}
             disabled={deleting}
-            className="flex items-center px-4 py-2 border border-red-600 dark:border-red-500 text-red-600 dark:text-red-400 rounded hover:bg-red-50 dark:hover:bg-red-950 text-sm font-medium disabled:opacity-50"
+            className="flex items-center px-3.5 py-2 border border-red-600 dark:border-red-500 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-950 text-sm font-medium disabled:opacity-50 transition-colors"
           >
             <Trash2 className="w-4 h-4 mr-2" />
             Delete
@@ -173,15 +196,65 @@ export default function EditSmtpPage() {
 
       <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 shadow-sm p-6">
         {error && (
-          <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 rounded border border-red-200 dark:border-red-900 text-sm">
+          <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 rounded-lg border border-red-200 dark:border-red-900 text-sm">
             {error}
           </div>
         )}
         {success && (
-          <div className="mb-6 p-4 bg-green-50 dark:bg-green-950/50 text-green-700 dark:text-green-400 rounded border border-green-200 dark:border-green-900 text-sm">
+          <div className="mb-6 p-4 bg-green-50 dark:bg-green-950/50 text-green-700 dark:text-green-400 rounded-lg border border-green-200 dark:border-green-900 text-sm">
             {success}
           </div>
         )}
+
+        {/* Health Status Banner */}
+        {accountDetails && (
+          <div className="mb-6 p-4 rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+                Health Status
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                {accountDetails.health_status === 'healthy' ? (
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400">
+                    <CheckCircle className="w-3.5 h-3.5 mr-1.5" /> Healthy
+                    {accountDetails.last_health_latency_ms !== null && accountDetails.last_health_latency_ms !== undefined && (
+                      <span className="ml-1 opacity-75 font-mono">({accountDetails.last_health_latency_ms}ms)</span>
+                    )}
+                  </span>
+                ) : accountDetails.health_status === 'unhealthy' ? (
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-400">
+                    <AlertTriangle className="w-3.5 h-3.5 mr-1.5" /> Unhealthy
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                    Untested
+                  </span>
+                )}
+                {accountDetails.last_health_check_at && (
+                  <span className="text-xs text-gray-400 flex items-center ml-2">
+                    <Clock className="w-3.5 h-3.5 mr-1" />
+                    Last checked: {new Date(accountDetails.last_health_check_at).toLocaleString()}
+                  </span>
+                )}
+              </div>
+              {accountDetails.last_health_error && (
+                <div className="text-xs text-rose-600 dark:text-rose-400 mt-2 font-mono break-all">
+                  {accountDetails.last_health_error}
+                </div>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={handleTestConnection}
+              disabled={testingConnection}
+              className="self-start sm:self-center text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium flex items-center"
+            >
+              <Activity className="w-3.5 h-3.5 mr-1" />
+              Re-verify Connection
+            </button>
+          </div>
+        )}
+
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -315,6 +388,17 @@ export default function EditSmtpPage() {
           </div>
         </form>
       </div>
+
+      {/* Send Test Email Modal */}
+      <SendTestEmailModal
+        isOpen={isSendTestOpen}
+        onClose={() => setIsSendTestOpen(false)}
+        account={accountDetails}
+        onSuccess={() => {
+          fetchAccount();
+        }}
+      />
     </div>
   );
 }
+
