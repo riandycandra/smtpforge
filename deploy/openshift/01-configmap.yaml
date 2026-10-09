@@ -23,6 +23,10 @@ data:
   API_URL: "http://mailer-api:3000"
   NEXT_PUBLIC_API_URL: "/api/v1"
 
+  # Allowed CORS origins
+  CORS_ORIGIN: "*"
+  WEB_URL: "http://mailer.apps.your-cluster.com"
+
   # App & Worker concurrency limits
   WORKER_CONCURRENCY: "20"
   MAX_ATTACHMENT_SIZE_MB: "10"

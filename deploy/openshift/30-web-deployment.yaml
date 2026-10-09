@@ -18,7 +18,7 @@ spec:
       containers:
         - name: web
           image: docker.io/riandycandra/mailer-web:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 3000
               name: http

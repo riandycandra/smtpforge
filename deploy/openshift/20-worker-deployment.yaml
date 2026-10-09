@@ -19,7 +19,7 @@ spec:
       containers:
         - name: worker
           image: docker.io/riandycandra/mailer-worker:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: mailer-config
