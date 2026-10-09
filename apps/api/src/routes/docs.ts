@@ -435,5 +435,13 @@ docsRouter.get('/', swaggerUi.setup(openApiSpec, {
   customCss: '.swagger-ui .topbar { display: none }',
   swaggerOptions: {
     persistAuthorization: true,
+    docExpansion: 'none',          // Keep endpoints collapsed to prevent rendering huge initial DOM tree
+    defaultModelsExpandDepth: -1, // Collapse schemas/models section by default
+    displayRequestDuration: true,
+    syntaxHighlight: {
+      activate: true,
+      theme: 'agate',
+    },
+    tryItOutEnabled: false,
   },
 }));

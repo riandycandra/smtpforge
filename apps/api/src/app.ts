@@ -1,6 +1,7 @@
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
+import compression from 'compression';
 import { requestIdMiddleware } from './middlewares/requestId';
 import { requestLogger } from './middlewares/logger';
 import { errorHandler } from './middlewares/errorHandler';
@@ -9,6 +10,9 @@ import { healthRouter } from './routes/health';
 import { docsRouter } from './routes/docs';
 
 export const app = express();
+
+// Compress response bodies (especially useful for Swagger bundle and JSON payloads)
+app.use(compression());
 
 // Public API docs are intentionally available without authentication.
 app.use('/docs', docsRouter);
