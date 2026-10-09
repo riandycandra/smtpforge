@@ -39,11 +39,38 @@ export default function NewApiKeyPage() {
     }
   };
 
-  const handleCopy = () => {
-    if (createdKey) {
-      navigator.clipboard.writeText(createdKey.api_key);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+  const handleCopy = async () => {
+    if (!createdKey?.api_key) return;
+
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(createdKey.api_key);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+        return;
+      }
+    } catch (err) {
+      // Fallback below if clipboard API permission denied or unsupported
+    }
+
+    // Fallback for non-secure HTTP origins (Firefox/Chrome restrict navigator.clipboard on plain HTTP)
+    try {
+      const textArea = document.createElement('textarea');
+      textArea.value = createdKey.api_key;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      textArea.style.top = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      const successful = document.execCommand('copy');
+      document.body.removeChild(textArea);
+      if (successful) {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }
+    } catch (fallbackErr) {
+      console.error('Failed to copy API key to clipboard', fallbackErr);
     }
   };
 
@@ -67,14 +94,38 @@ export default function NewApiKeyPage() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded p-4 mb-8">
-            <code className="text-gray-900 dark:text-gray-100 font-mono text-lg break-all mr-4">{createdKey.api_key}</code>
+          <div
+            onClick={handleCopy}
+            className="group relative flex items-center justify-between bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 rounded-lg p-4 mb-8 cursor-pointer transition-all hover:shadow-md"
+            title="Click to copy API key"
+          >
+            <div className="text-left flex-1 mr-4">
+              <span className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+                {copied ? '✓ Copied to clipboard!' : 'Click to copy:'}
+              </span>
+              <code className="text-gray-900 dark:text-gray-100 font-mono text-base sm:text-lg break-all select-all">
+                {createdKey.api_key}
+              </code>
+            </div>
             <button
-              onClick={handleCopy}
-              className="flex items-center px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 text-sm font-medium text-gray-600 dark:text-gray-300"
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleCopy();
+              }}
+              className="flex items-center px-3.5 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm group-hover:bg-blue-50 group-hover:border-blue-400 group-hover:text-blue-600 dark:group-hover:bg-gray-600 text-sm font-medium text-gray-700 dark:text-gray-200 transition-all flex-shrink-0"
             >
-              {copied ? <Check className="w-4 h-4 mr-2 text-green-600 dark:text-green-400" /> : <Copy className="w-4 h-4 mr-2 text-gray-600 dark:text-gray-400" />}
-              {copied ? 'Copied' : 'Copy'}
+              {copied ? (
+                <>
+                  <Check className="w-4 h-4 mr-1.5 text-green-600 dark:text-green-400" />
+                  <span className="text-green-600 dark:text-green-400 font-semibold">Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-4 h-4 mr-1.5 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400" />
+                  <span>Copy</span>
+                </>
+              )}
             </button>
           </div>
 
