@@ -94,39 +94,24 @@ export default function NewApiKeyPage() {
             </div>
           </div>
 
-          <div
-            onClick={handleCopy}
-            className="group relative flex items-center justify-between bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 rounded-lg p-4 mb-8 cursor-pointer transition-all hover:shadow-md"
-            title="Click to copy API key"
-          >
-            <div className="text-left flex-1 mr-4">
-              <span className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-                {copied ? '✓ Copied to clipboard!' : 'Click to copy:'}
-              </span>
-              <code className="text-gray-900 dark:text-gray-100 font-mono text-base sm:text-lg break-all select-all">
+          <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-5 mb-8 text-center">
+            <div className="relative inline-block group">
+              <code
+                onClick={handleCopy}
+                className="cursor-pointer font-mono text-base sm:text-lg break-all select-all text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline px-2 py-1 rounded transition-colors"
+              >
                 {createdKey.api_key}
               </code>
+              <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:flex items-center px-2 py-1 text-xs font-medium text-white bg-gray-900 dark:bg-gray-700 rounded shadow-sm whitespace-nowrap z-10 transition-opacity">
+                {copied ? '✓ Copied to clipboard!' : 'Click to copy'}
+                <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
+              </div>
             </div>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleCopy();
-              }}
-              className="flex items-center px-3.5 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm group-hover:bg-blue-50 group-hover:border-blue-400 group-hover:text-blue-600 dark:group-hover:bg-gray-600 text-sm font-medium text-gray-700 dark:text-gray-200 transition-all flex-shrink-0"
-            >
-              {copied ? (
-                <>
-                  <Check className="w-4 h-4 mr-1.5 text-green-600 dark:text-green-400" />
-                  <span className="text-green-600 dark:text-green-400 font-semibold">Copied!</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="w-4 h-4 mr-1.5 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400" />
-                  <span>Copy</span>
-                </>
-              )}
-            </button>
+            {copied && (
+              <p className="text-xs text-green-600 dark:text-green-400 font-medium mt-2 animate-fade-in">
+                ✓ Copied to clipboard!
+              </p>
+            )}
           </div>
 
           <Link
