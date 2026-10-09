@@ -89,22 +89,22 @@ router.post(
 
       // Auto-select SMTP account if not provided
       if (!smtpAccountId) {
-        // Try to find an account this API key has permission for
+        // Find an active SMTP account explicitly assigned to this API key
         const permission = await ApiKeySmtpPermission.findOne({
           where: { api_key_id: apiKeyId },
           include: [{ model: SmtpAccount, where: { is_active: true } }]
         });
 
-        if (permission) {
-          smtpAccountId = permission.smtp_account_id;
-        } else {
-          // Fallback to any active account if no specific permissions are set
-          const fallbackAccount = await SmtpAccount.findOne({ where: { is_active: true } });
-          if (!fallbackAccount) {
-            return sendError(res, 'No active SMTP accounts available. Please configure one in the dashboard.', [], 503);
-          }
-          smtpAccountId = fallbackAccount.id;
+        if (!permission) {
+          return sendError(
+            res,
+            'No active SMTP account assigned to this API key. Please assign an SMTP account in the dashboard.',
+            [],
+            403
+          );
         }
+
+        smtpAccountId = permission.smtp_account_id;
       }
 
       // Normalize "to" to an array

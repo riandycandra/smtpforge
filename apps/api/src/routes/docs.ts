@@ -134,7 +134,7 @@ const openApiSpec = {
           smtp_account: {
             type: 'string',
             format: 'uuid',
-            description: 'Optional SMTP account ID. If omitted, SMTP Forge auto-selects an active account.',
+            description: 'Optional SMTP account ID. If omitted, SMTP Forge auto-selects an active account assigned to this API key.',
             example: 'b2fe839c-0f7f-48fe-872f-9dc37d51af65',
           },
         },
@@ -378,7 +378,7 @@ const openApiSpec = {
         tags: ['SMTP Accounts'],
         summary: 'List SMTP accounts',
         description: [
-          'Returns SMTP accounts the current API key may use. If no specific permissions are configured, all active accounts are returned.',
+          'Returns active SMTP accounts assigned to the current API key.',
           '',
           '**Required Request Header:**',
           '- `X-Mailer-Api-Key`: Your public API key from the dashboard. When testing with "Try it out", click the **Authorize** 🔓 button at the top to set this header.',

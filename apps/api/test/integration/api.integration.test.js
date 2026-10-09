@@ -128,6 +128,21 @@ test('API integration flow covers admin and public APIs', async () => {
     await expectSuccess(apiKeyUpdate);
     assert.equal(apiKeyUpdate.body.data.name, 'Integration key updated');
 
+    // Unassigned key must not see any SMTP accounts and cannot auto-select
+    const unassignedSmtp = await request('GET', '/api/v1/smtp-accounts', { apiKey: publicApiKey });
+    await expectSuccess(unassignedSmtp);
+    assert.equal(unassignedSmtp.body.data.length, 0);
+
+    const unassignedSend = await request('POST', '/api/v1/emails', {
+      apiKey: publicApiKey,
+      body: {
+        to: ['recipient@example.com'],
+        subject: 'Should fail',
+        html: '<p>Should fail without assigned SMTP</p>',
+      },
+    });
+    assert.equal(unassignedSend.status, 403);
+
     const permission = await request('POST', `/api/v1/admin/api-keys/${apiKeyId}/smtp-permissions`, {
       token: adminToken,
       body: { smtp_account_id: smtpId },
