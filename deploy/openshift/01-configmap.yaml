@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mailer-config
+  labels:
+    app.kubernetes.io/name: mailer-platform
+data:
+  NODE_ENV: "production"
+  PORT: "3000"
+
+  # External PostgreSQL host & port (reachable from OCP nodes)
+  DB_HOST: "postgres.external.yourdomain.com"
+  DB_PORT: "5432"
+  DB_NAME: "mailer_db"
+  DB_USER: "mailer_user"
+
+  # External Redis host & port (reachable from OCP nodes)
+  REDIS_HOST: "redis.external.yourdomain.com"
+  REDIS_PORT: "6379"
+  REDIS_DB: "0"
+
+  # Internal cluster URL for Next.js to forward /api and /docs to Express
+  API_URL: "http://mailer-api:3000"
+  NEXT_PUBLIC_API_URL: "/api/v1"
+
+  # App & Worker concurrency limits
+  WORKER_CONCURRENCY: "20"
+  MAX_ATTACHMENT_SIZE_MB: "10"
+  RETENTION_DAYS: "90"
+  DOWNLOAD_TIMEOUT_MS: "15000"

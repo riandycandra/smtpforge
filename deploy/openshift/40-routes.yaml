@@ -1,0 +1,20 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: mailer-web
+  labels:
+    app.kubernetes.io/name: mailer-platform
+    app.kubernetes.io/component: web
+spec:
+  # Leave host commented or omitted to let OpenShift assign the default router wildcard domain,
+  # or specify your custom hostname below:
+  # host: mailer.apps.your-cluster.com
+  to:
+    kind: Service
+    name: mailer-web
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

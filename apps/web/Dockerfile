@@ -23,15 +23,17 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs
+    adduser --system --uid 1001 --ingroup nodejs nextjs
 
-# Next.js standalone build output is ideal, but assuming standard build for now
-# Ensure you configure output: 'standalone' in next.config.js for optimal Docker usage
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/public ./apps/web/public
+COPY --from=builder /app/apps/web/.next/standalone ./
+COPY --from=builder /app/apps/web/.next/static ./apps/web/.next/static
+COPY --from=builder /app/apps/web/public ./apps/web/public
 
-USER nextjs
+# OpenShift runs containers with an arbitrary UID in root group (GID 0)
+RUN chown -R 1001:0 /app && \
+    chmod -R g=u /app
+
+USER 1001
 
 EXPOSE 3000
 ENV PORT=3000

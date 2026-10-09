@@ -19,13 +19,17 @@ RUN pnpm --filter worker --prod --legacy deploy /app/out
 FROM node:22-alpine AS runner
 WORKDIR /app
 
-# Non-root user
+# Non-root user (OpenShift / K8s friendly)
 RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nodejs
+    adduser --system --uid 1001 --ingroup nodejs nodejs
 
-COPY --from=builder --chown=nodejs:nodejs /app/out ./
+COPY --from=builder /app/out ./
 
-USER nodejs
+# OpenShift runs containers with an arbitrary UID in root group (GID 0)
+RUN chown -R 1001:0 /app && \
+    chmod -R g=u /app
+
+USER 1001
 
 ENV NODE_ENV=production
 

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mailer-worker
+  labels:
+    app.kubernetes.io/name: mailer-platform
+    app.kubernetes.io/component: worker
+spec:
+  # Horizontally scalable background worker
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mailer-worker
+  template:
+    metadata:
+      labels:
+        app: mailer-worker
+    spec:
+      containers:
+        - name: worker
+          image: docker.io/riandycandra/mailer-worker:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: mailer-config
+            - secretRef:
+                name: mailer-secrets
+          resources:
+            requests:
+              cpu: 150m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          volumeMounts:
+            # Ephemeral in-memory/scratch space for attachment downloading
+            - mountPath: /tmp
+              name: ephemeral-tmp
+      volumes:
+        - name: ephemeral-tmp
+          emptyDir:
+            sizeLimit: 1Gi

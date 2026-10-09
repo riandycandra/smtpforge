@@ -4,15 +4,14 @@
 .vscode/
 .idea/
 
-node_modules/
+**/node_modules
+**/dist
+**/build
+**/.next
+**/out
 npm-debug.log
 yarn-error.log
 pnpm-debug.log
-
-dist/
-build/
-.next/
-out/
 
 # Environment files
 .env
