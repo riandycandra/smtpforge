@@ -13,7 +13,11 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/docs',
-        destination: `${apiTarget}/docs`,
+        destination: `${apiTarget}/docs/index.html`,
+      },
+      {
+        source: '/docs/',
+        destination: `${apiTarget}/docs/index.html`,
       },
       {
         source: '/docs/:path*',

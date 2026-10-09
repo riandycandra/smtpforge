@@ -20,3 +20,23 @@ spec:
   # tls:
   #   termination: edge
   #   insecureEdgeTerminationPolicy: Redirect
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: mailer-api
+  labels:
+    app.kubernetes.io/name: mailer-platform
+    app.kubernetes.io/component: api
+spec:
+  to:
+    kind: Service
+    name: mailer-api
+    weight: 100
+  port:
+    targetPort: http
+  # Optional TLS / HTTPS configuration:
+  # Uncomment the block below if your cluster's ingress router has SSL/TLS certificates configured:
+  # tls:
+  #   termination: edge
+  #   insecureEdgeTerminationPolicy: Redirect

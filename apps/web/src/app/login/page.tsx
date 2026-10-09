@@ -38,14 +38,6 @@ const getErrorMessage = (error: unknown) => {
   return 'Invalid credentials';
 };
 
-const getDocsUrl = () => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
-  const backendUrl = apiUrl.replace(/\/api\/v1\/?$/, '').replace(/\/$/, '');
-  return `${backendUrl}/docs`;
-};
-
-const docsUrl = getDocsUrl();
-
 export default function LoginPage() {
   const router = useRouter();
   const { theme, toggleTheme } = useTheme();
@@ -54,8 +46,23 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [isDefaultState, setIsDefaultState] = useState(false);
+  const [docsUrl, setDocsUrl] = useState('/docs');
 
   useEffect(() => {
+    // Dynamically resolve docsUrl at browser runtime
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname;
+      // If deployed in OpenShift (e.g. mailer-web-...), point directly to mailer-api route
+      if (hostname.includes('mailer-web-')) {
+        const apiHost = hostname.replace('mailer-web-', 'mailer-api-');
+        setDocsUrl(`${window.location.protocol}//${apiHost}/docs`);
+      } else {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
+        const backendUrl = apiUrl.replace(/\/api\/v1\/?$/, '').replace(/\/$/, '');
+        setDocsUrl(backendUrl ? `${backendUrl}/docs` : '/docs');
+      }
+    }
+
     // Check if we should show the default credentials hint
     const checkStatus = async () => {
       try {

@@ -21,7 +21,7 @@ data:
 
   # Internal cluster URL for Next.js to forward /api and /docs to Express
   API_URL: "http://mailer-api:3000"
-  NEXT_PUBLIC_API_URL: "/api/v1"
+  NEXT_PUBLIC_API_URL: "http://mailer-api.apps.your-cluster.com/api/v1"
 
   # Allowed CORS origins
   CORS_ORIGIN: "*"
