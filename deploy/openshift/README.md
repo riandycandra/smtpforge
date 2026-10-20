@@ -50,10 +50,6 @@ oc apply -f deploy/openshift/40-routes.yaml
 
 ## 4. Verify the Deployment
 
----
-
-## 4. Verify the Deployment
-
 1. Check pod status:
    ```bash
    oc get pods -w
