@@ -1,36 +1,27 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SMTP Forge — Web Dashboard (`apps/web`)
 
-## Getting Started
+The administrative Next.js 16 frontend for **SMTP Forge**.
 
-First, run the development server:
+## Features
 
+- **Dashboard Overview (`/dashboard`)**: Delivery volume summary, recent activity, and quick system health indicators.
+- **SMTP Accounts (`/dashboard/smtp`)**: Manage SMTP servers, configure TLS (`reject_unauthorized`), run single or bulk SMTP health checks, test connections, and send live test emails.
+- **API Keys (`/dashboard/api-keys`)**: Provision SHA-256 hashed API keys, configure per-key hourly rate limits, and scope keys to specific SMTP accounts.
+- **Email Logs (`/dashboard/logs`)**: Searchable, filterable audit trail of all queued, processing, sent, and failed emails with one-click **Resend** capability.
+- **Metrics (`/dashboard/metrics`)**: Time-series delivery charts, latency metrics, and live BullMQ worker statistics.
+- **Notifications (`/dashboard/notifications`)**: Configure and test operational status alerts for **Slack**, **Microsoft Teams**, and **Telegram**.
+- **Security (`/login`, `/change-password`, `/dashboard/settings`)**: JWT-authenticated admin sessions with mandatory password rotation on initial login.
+
+## Running Locally
+
+From the repository root:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm dev:web
+```
+Or start the entire stack (`api`, `worker`, `web`) with:
+```bash
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+In local development alongside the API on port `3000`, the dashboard runs on [http://localhost:3001](http://localhost:3001).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

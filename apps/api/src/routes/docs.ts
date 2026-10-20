@@ -117,13 +117,8 @@ const openApiSpec = {
           },
           html: {
             type: 'string',
-            description: 'HTML body for the email.',
+            description: 'HTML body for the email (max 5MB).',
             example: '<h1>Hello from SMTP Forge</h1>',
-          },
-          text: {
-            type: 'string',
-            description: 'Optional plain text fallback.',
-            example: 'Hello from SMTP Forge',
           },
           attachments: {
             type: 'array',
@@ -293,8 +288,18 @@ const openApiSpec = {
               },
             },
           },
-          '503': {
-            description: 'No active SMTP account is available.',
+          '403': {
+            description: 'API key is inactive, not authorized for the requested SMTP account, or has no active SMTP account assigned.',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/ErrorResponse',
+                },
+              },
+            },
+          },
+          '429': {
+            description: 'Hourly rate limit exceeded for this API key.',
             content: {
               'application/json': {
                 schema: {
