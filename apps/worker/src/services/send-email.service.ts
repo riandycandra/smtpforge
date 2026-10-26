@@ -20,7 +20,9 @@ export async function sendEmailService(payload: EmailJobPayload): Promise<SendRe
       downloadedAttachments = await downloadAttachments(payload.attachments);
     }
 
-    const fromString = fromName ? `"${fromName}" <${fromEmail}>` : fromEmail;
+    const effectiveFromEmail = payload.from_email?.trim() || fromEmail;
+    const effectiveFromName = payload.from_name !== undefined ? payload.from_name.trim() : fromName;
+    const fromString = effectiveFromName ? `"${effectiveFromName}" <${effectiveFromEmail}>` : effectiveFromEmail;
 
     const info = await transporter.sendMail({
       from: fromString,

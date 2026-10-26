@@ -7,6 +7,8 @@ interface EmailJobAttributes {
   job_id: string;
   api_key_id: string | null;
   smtp_account_id: string;
+  from_email?: string | null;
+  from_name?: string | null;
   to: string[];
   cc: string[] | null;
   bcc: string[] | null;
@@ -23,13 +25,15 @@ interface EmailJobAttributes {
   updated_at?: Date;
 }
 
-interface EmailJobCreationAttributes extends Optional<EmailJobAttributes, 'id' | 'api_key_id' | 'cc' | 'bcc' | 'attachments' | 'error_message' | 'smtp_response' | 'retry_count' | 'latency_ms' | 'sent_at'> {}
+interface EmailJobCreationAttributes extends Optional<EmailJobAttributes, 'id' | 'api_key_id' | 'from_email' | 'from_name' | 'cc' | 'bcc' | 'attachments' | 'error_message' | 'smtp_response' | 'retry_count' | 'latency_ms' | 'sent_at'> {}
 
 export class EmailJob extends Model<EmailJobAttributes, EmailJobCreationAttributes> implements EmailJobAttributes {
   declare id: string;
   declare job_id: string;
   declare api_key_id: string | null;
   declare smtp_account_id: string;
+  declare from_email: string | null;
+  declare from_name: string | null;
   declare to: string[];
   declare cc: string[] | null;
   declare bcc: string[] | null;
@@ -64,6 +68,14 @@ EmailJob.init({
   smtp_account_id: {
     type: DataTypes.UUID,
     allowNull: false,
+  },
+  from_email: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+  },
+  from_name: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
   },
   to: {
     type: DataTypes.JSONB,

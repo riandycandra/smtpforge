@@ -76,6 +76,19 @@ const openApiSpec = {
         type: 'object',
         required: ['to', 'subject', 'html'],
         properties: {
+          from_email: {
+            type: 'string',
+            format: 'email',
+            maxLength: 255,
+            description: 'Optional custom sender email address. If omitted, uses the default from_email configured in the selected SMTP account.',
+            example: 'billing@example.com',
+          },
+          from_name: {
+            type: 'string',
+            maxLength: 255,
+            description: 'Optional custom sender display name. If omitted, uses the default from_name configured in the selected SMTP account.',
+            example: 'Acme Billing',
+          },
           to: {
             oneOf: [
               {

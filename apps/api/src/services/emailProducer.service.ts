@@ -10,6 +10,8 @@ export async function enqueueEmailJob(payload: Omit<EmailJobPayload, 'email_job_
     job_id: `pending-${uuidv4()}`, // Use unique ID to avoid DB unique constraint conflict
     api_key_id: payload.api_key_id,
     smtp_account_id: payload.smtp_account_id,
+    from_email: payload.from_email || null,
+    from_name: payload.from_name || null,
     to: payload.to,
     cc: payload.cc || null,
     bcc: payload.bcc || null,

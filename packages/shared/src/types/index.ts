@@ -13,6 +13,8 @@ export interface EmailJobPayload {
   smtp_account_id: string;
   api_key_id: string | null;
   request_id?: string; // Distributed tracing correlation
+  from_email?: string;
+  from_name?: string;
   to: string[];
   cc?: string[];
   bcc?: string[];

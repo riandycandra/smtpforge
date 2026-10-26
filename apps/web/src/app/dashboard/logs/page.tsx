@@ -8,6 +8,8 @@ import DOMPurify from 'dompurify';
 interface EmailLog {
   id: string;
   status: 'sent' | 'failed' | 'queued' | 'processing' | 'retrying';
+  from_email?: string | null;
+  from_name?: string | null;
   to: string[];
   subject: string;
   html: string;
@@ -422,6 +424,18 @@ export default function LogsDashboardPage() {
               </h2>
 
               <div className="flex flex-col space-y-2 text-sm">
+                <div className="flex items-start gap-3">
+                  <span className="w-16 text-gray-400 dark:text-gray-500 font-medium">From:</span>
+                  <span className="flex-1 font-medium text-gray-700 dark:text-gray-300">
+                    {selectedLog.from_email ? (
+                      selectedLog.from_name
+                        ? `"${selectedLog.from_name}" <${selectedLog.from_email}>`
+                        : selectedLog.from_email
+                    ) : (
+                      <span className="text-gray-400 dark:text-gray-500 italic">Default SMTP sender</span>
+                    )}
+                  </span>
+                </div>
                 <div className="flex items-start gap-3">
                   <span className="w-16 text-gray-400 dark:text-gray-500 font-medium">To:</span>
                   <span className="flex-1 font-medium text-gray-700 dark:text-gray-300">

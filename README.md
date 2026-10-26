@@ -114,6 +114,8 @@ Queues an outbound email for asynchronous delivery via BullMQ.
 **Payload (JSON)**:
 | Field | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
+| `from_email` | `string` | No | Override sender email address (max 255 chars). If omitted, falls back to the SMTP account's configured `from_email`. |
+| `from_name` | `string` | No | Override sender display name (max 255 chars). If omitted, falls back to the SMTP account's configured `from_name`. |
 | `to` | `string` or `string[]` | **Yes** | Primary recipient email address, or an array of valid email addresses (min 1). |
 | `cc` | `string[]` | No | Array of Carbon Copy (CC) recipient email addresses (max 255 chars each). |
 | `bcc` | `string[]` | No | Array of Blind Carbon Copy (BCC) recipient email addresses (max 255 chars each). |
@@ -128,6 +130,8 @@ curl -X POST http://localhost:3000/api/v1/emails \
   -H "Content-Type: application/json" \
   -H "X-Mailer-Api-Key: your_key_here" \
   -d '{
+    "from_email": "billing@example.com",
+    "from_name": "Acme Billing",
     "to": ["user@example.com", "ops@example.com"],
     "cc": ["manager@example.com"],
     "bcc": ["audit@example.com"],

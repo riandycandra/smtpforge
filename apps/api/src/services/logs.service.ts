@@ -54,6 +54,8 @@ export async function resendLog(id: string) {
     const payload = {
       api_key_id: originalLog.api_key_id,
       smtp_account_id: originalLog.smtp_account_id,
+      from_email: originalLog.from_email || undefined,
+      from_name: originalLog.from_name || undefined,
       to: originalLog.to,
       cc: originalLog.cc || undefined,
       bcc: originalLog.bcc || undefined,

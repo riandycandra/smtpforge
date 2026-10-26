@@ -16,6 +16,20 @@ const sendEmailValidator = [
     .isUUID()
     .withMessage('smtp_account must be a valid UUID'),
 
+  body('from_email')
+    .optional()
+    .isEmail()
+    .withMessage('from_email must be a valid email address')
+    .isLength({ max: 255 })
+    .withMessage('from_email cannot exceed 255 characters'),
+
+  body('from_name')
+    .optional()
+    .isString()
+    .withMessage('from_name must be a string')
+    .isLength({ max: 255 })
+    .withMessage('from_name cannot exceed 255 characters'),
+
   body('to')
     .notEmpty()
     .withMessage('to is required')
