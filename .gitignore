@@ -48,3 +48,4 @@ coverage/
 data/
 
 /graphify-out
+.codegraph
