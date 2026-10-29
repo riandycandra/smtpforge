@@ -1,4 +1,35 @@
 const { spawn, spawnSync } = require('child_process');
+const path = require('path');
+const fs = require('fs');
+
+// Load environment variables from root .env if present
+const rootEnvPath = path.resolve(__dirname, '../.env');
+if (fs.existsSync(rootEnvPath)) {
+  try {
+    // If dotenv is available, parse and load it
+    const dotenv = require('dotenv');
+    dotenv.config({ path: rootEnvPath });
+  } catch {
+    // Fallback simple line-by-line parser if dotenv is not directly hoisted
+    const content = fs.readFileSync(rootEnvPath, 'utf8');
+    content.split('\n').forEach(line => {
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith('#')) {
+        const eqIdx = trimmed.indexOf('=');
+        if (eqIdx !== -1) {
+          const key = trimmed.slice(0, eqIdx).trim();
+          let val = trimmed.slice(eqIdx + 1).trim();
+          if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+            val = val.slice(1, -1);
+          }
+          if (!process.env[key]) {
+            process.env[key] = val;
+          }
+        }
+      }
+    });
+  }
+}
 
 /**
  * Cross-platform script to run all services (API, Worker, Web) in parallel.

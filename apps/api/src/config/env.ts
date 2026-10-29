@@ -1,5 +1,9 @@
 import dotenv from 'dotenv';
 import path from 'path';
+
+// Check root repository .env first, then package-level .env
+dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+dotenv.config({ path: path.resolve(__dirname, '../../../../.env') });
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 function requireEnv(key: string): string {
