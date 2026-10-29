@@ -20,12 +20,14 @@ interface EmailJobAttributes {
   smtp_response: string | null;
   retry_count: number;
   latency_ms: number | null;
+  smtp_latency_ms?: number | null;
+  smtp_responded_at?: Date | null;
   sent_at: Date | null;
   created_at?: Date;
   updated_at?: Date;
 }
 
-interface EmailJobCreationAttributes extends Optional<EmailJobAttributes, 'id' | 'api_key_id' | 'from_email' | 'from_name' | 'cc' | 'bcc' | 'attachments' | 'error_message' | 'smtp_response' | 'retry_count' | 'latency_ms' | 'sent_at'> {}
+interface EmailJobCreationAttributes extends Optional<EmailJobAttributes, 'id' | 'api_key_id' | 'from_email' | 'from_name' | 'cc' | 'bcc' | 'attachments' | 'error_message' | 'smtp_response' | 'retry_count' | 'latency_ms' | 'smtp_latency_ms' | 'smtp_responded_at' | 'sent_at'> {}
 
 export class EmailJob extends Model<EmailJobAttributes, EmailJobCreationAttributes> implements EmailJobAttributes {
   declare id: string;
@@ -45,6 +47,8 @@ export class EmailJob extends Model<EmailJobAttributes, EmailJobCreationAttribut
   declare smtp_response: string | null;
   declare retry_count: number;
   declare latency_ms: number | null;
+  declare smtp_latency_ms: number | null;
+  declare smtp_responded_at: Date | null;
   declare sent_at: Date | null;
   declare created_at: Date;
   declare updated_at: Date;
@@ -121,6 +125,14 @@ EmailJob.init({
   },
   latency_ms: {
     type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+  smtp_latency_ms: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+  smtp_responded_at: {
+    type: DataTypes.DATE,
     allowNull: true,
   },
   sent_at: {

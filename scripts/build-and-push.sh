@@ -7,6 +7,7 @@ set -euo pipefail
 DOCKER_USERNAME="${DOCKER_USERNAME:-riandycandra}"
 TAG="${TAG:-latest}"
 REPO_PREFIX="${REPO_PREFIX:-mailer}"
+PLATFORM="${PLATFORM:-linux/amd64}"
 
 # Check if Docker username is provided
 if [ -z "$DOCKER_USERNAME" ]; then
@@ -26,6 +27,7 @@ echo " Project Root   : $ROOT_DIR"
 echo " Docker Hub User: $DOCKER_USERNAME"
 echo " Image Prefix   : $REPO_PREFIX"
 echo " Tag            : $TAG"
+echo " Platform       : $PLATFORM"
 echo "=========================================="
 
 # Ensure user is logged in to Docker Hub (optional check)
@@ -47,37 +49,26 @@ SERVICES=(
   "web:apps/web/Dockerfile"
 )
 
-# 1. Build images
+# 1. Build and push images
 echo ""
-echo ">>> [1/2] Building Docker images..."
+echo ">>> Building and pushing Docker images for platform $PLATFORM..."
 for item in "${SERVICES[@]}"; do
   IFS=":" read -r SERVICE DOCKERFILE <<< "$item"
   FULL_IMAGE_NAME="${DOCKER_USERNAME}/${REPO_PREFIX}-${SERVICE}:${TAG}"
 
   echo "----------------------------------------------------"
-  echo "Building: $SERVICE ($FULL_IMAGE_NAME)"
+  echo "Building & Pushing: $SERVICE ($FULL_IMAGE_NAME)"
   echo "Dockerfile: $DOCKERFILE"
+  echo "Platform: $PLATFORM"
   echo "Context: $ROOT_DIR"
   echo "----------------------------------------------------"
 
-  docker build \
+  docker buildx build \
+    --platform "$PLATFORM" \
     -t "$FULL_IMAGE_NAME" \
     -f "$ROOT_DIR/$DOCKERFILE" \
+    --push \
     "$ROOT_DIR"
-done
-
-# 2. Push images
-echo ""
-echo ">>> [2/2] Pushing Docker images to Docker Hub..."
-for item in "${SERVICES[@]}"; do
-  IFS=":" read -r SERVICE _ <<< "$item"
-  FULL_IMAGE_NAME="${DOCKER_USERNAME}/${REPO_PREFIX}-${SERVICE}:${TAG}"
-
-  echo "----------------------------------------------------"
-  echo "Pushing: $FULL_IMAGE_NAME"
-  echo "----------------------------------------------------"
-
-  docker push "$FULL_IMAGE_NAME"
 done
 
 echo ""

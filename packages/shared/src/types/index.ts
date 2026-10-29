@@ -38,6 +38,8 @@ export interface QueueJobResult {
   messageId?: string;
   smtpResponse?: string;
   latencyMs?: number;
+  smtpRespondedAt?: string;
+  smtpLatencyMs?: number;
   error?: string;
 }
 
@@ -58,6 +60,8 @@ export interface EmailProgressData {
   percentage: number;
   message: string;
   latency_ms?: number | null;
+  smtp_latency_ms?: number | null;
+  smtp_responded_at?: string | null;
   smtp_response?: string | null;
   error?: string | null;
   timestamp: string;

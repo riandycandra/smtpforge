@@ -46,6 +46,8 @@ export async function streamEmailProgress(
       percentage: 100,
       message: 'Email delivered successfully',
       latency_ms: initialJobRecord.latency_ms,
+      smtp_latency_ms: initialJobRecord.smtp_latency_ms,
+      smtp_responded_at: initialJobRecord.smtp_responded_at ? initialJobRecord.smtp_responded_at.toISOString() : null,
       smtp_response: initialJobRecord.smtp_response,
       timestamp: (initialJobRecord.sent_at || initialJobRecord.updated_at || new Date()).toISOString(),
     };
@@ -63,6 +65,9 @@ export async function streamEmailProgress(
       percentage: 100,
       message: initialJobRecord.error_message || 'Email delivery failed',
       error: initialJobRecord.error_message,
+      latency_ms: initialJobRecord.latency_ms,
+      smtp_latency_ms: initialJobRecord.smtp_latency_ms,
+      smtp_responded_at: initialJobRecord.smtp_responded_at ? initialJobRecord.smtp_responded_at.toISOString() : null,
       timestamp: (initialJobRecord.updated_at || new Date()).toISOString(),
     };
     sendSseEvent(res, 'failed', failedData);
@@ -131,6 +136,8 @@ export async function streamEmailProgress(
       percentage: 100,
       message: 'Email delivered successfully',
       latency_ms: parsedReturn?.latencyMs || null,
+      smtp_latency_ms: parsedReturn?.smtpLatencyMs || null,
+      smtp_responded_at: parsedReturn?.smtpRespondedAt || null,
       smtp_response: parsedReturn?.smtpResponse || null,
       timestamp: new Date().toISOString(),
     };
@@ -174,6 +181,8 @@ export async function streamEmailProgress(
           jobId: targetJobId,
           returnvalue: {
             latencyMs: latest.latency_ms,
+            smtpLatencyMs: latest.smtp_latency_ms,
+            smtpRespondedAt: latest.smtp_responded_at ? latest.smtp_responded_at.toISOString() : null,
             smtpResponse: latest.smtp_response,
           },
         });

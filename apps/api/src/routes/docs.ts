@@ -214,6 +214,8 @@ const openApiSpec = {
           percentage: { type: 'integer', example: 50 },
           message: { type: 'string', example: 'Connecting to SMTP server and transmitting message' },
           latency_ms: { type: 'integer', nullable: true, example: 320 },
+          smtp_latency_ms: { type: 'integer', nullable: true, example: 210 },
+          smtp_responded_at: { type: 'string', format: 'date-time', nullable: true, example: '2026-10-29T09:20:00.000Z' },
           smtp_response: { type: 'string', nullable: true, example: '250 2.0.0 OK' },
           error: { type: 'string', nullable: true },
           timestamp: { type: 'string', format: 'date-time' },

@@ -229,6 +229,7 @@ export async function sendTestEmail(id: string, recipientEmail: string) {
       text: `SMTP Forge Test Email\nAccount: ${account.name}\nHost: ${account.host}:${account.port}\nRecipient: ${recipientEmail}\nTimestamp: ${timestamp}`,
     });
 
+    const smtpRespondedAt = new Date();
     const latencyMs = Date.now() - start;
 
     // Log in database as EmailJob for audit trail
@@ -244,6 +245,8 @@ export async function sendTestEmail(id: string, recipientEmail: string) {
       status: EMAIL_STATUS.SENT,
       smtp_response: info.response,
       latency_ms: latencyMs,
+      smtp_latency_ms: latencyMs,
+      smtp_responded_at: smtpRespondedAt,
       sent_at: new Date(),
       retry_count: 0,
     });
@@ -261,8 +264,11 @@ export async function sendTestEmail(id: string, recipientEmail: string) {
       message_id: info.messageId,
       response: info.response,
       latency_ms: latencyMs,
+      smtp_latency_ms: latencyMs,
+      smtp_responded_at: smtpRespondedAt.toISOString(),
     };
   } catch (error: any) {
+    const smtpRespondedAt = new Date();
     const latencyMs = Date.now() - start;
 
     // Log failure in EmailJob for audit trail
@@ -278,6 +284,8 @@ export async function sendTestEmail(id: string, recipientEmail: string) {
       status: EMAIL_STATUS.FAILED,
       error_message: error.message || 'Send test email failed',
       latency_ms: latencyMs,
+      smtp_latency_ms: latencyMs,
+      smtp_responded_at: smtpRespondedAt,
       retry_count: 0,
     });
 
@@ -293,6 +301,8 @@ export async function sendTestEmail(id: string, recipientEmail: string) {
       job_id: testJobId,
       error: error.message || 'Unknown SMTP error during transmission',
       latency_ms: latencyMs,
+      smtp_latency_ms: latencyMs,
+      smtp_responded_at: smtpRespondedAt.toISOString(),
     };
   }
 }

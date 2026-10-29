@@ -65,6 +65,8 @@ export function createEmailWorker() {
         emailJobRecord.status = EMAIL_STATUS.SENT;
         emailJobRecord.smtp_response = result.response;
         emailJobRecord.latency_ms = latencyMs;
+        emailJobRecord.smtp_latency_ms = result.smtpLatencyMs;
+        emailJobRecord.smtp_responded_at = result.smtpRespondedAt;
         emailJobRecord.sent_at = new Date();
         emailJobRecord.error_message = null;
         await emailJobRecord.save();
@@ -77,6 +79,8 @@ export function createEmailWorker() {
           percentage: 100,
           message: 'Email delivered successfully',
           latency_ms: latencyMs,
+          smtp_latency_ms: result.smtpLatencyMs,
+          smtp_responded_at: result.smtpRespondedAt.toISOString(),
           smtp_response: result.response,
           timestamp: new Date().toISOString(),
         });
@@ -88,11 +92,22 @@ export function createEmailWorker() {
           messageId: result.messageId,
           smtpResponse: result.response,
           latencyMs,
+          smtpRespondedAt: result.smtpRespondedAt.toISOString(),
+          smtpLatencyMs: result.smtpLatencyMs,
         };
 
       } catch (error: any) {
         if (emailJobRecord) {
           const classification = classifyError(error);
+          const smtpRespondedAt = error.smtpRespondedAt || null;
+          const smtpLatencyMs = typeof error.smtpLatencyMs === 'number' ? error.smtpLatencyMs : null;
+
+          if (smtpRespondedAt) {
+            emailJobRecord.smtp_responded_at = smtpRespondedAt;
+          }
+          if (smtpLatencyMs !== null) {
+            emailJobRecord.smtp_latency_ms = smtpLatencyMs;
+          }
           
           if (classification === RetryClassification.NON_RETRYABLE) {
             // Force fail immediately, bypass BullMQ retries
@@ -109,6 +124,8 @@ export function createEmailWorker() {
               percentage: 100,
               message: `Delivery failed (non-retryable): ${error.message}`,
               error: error.message,
+              smtp_latency_ms: smtpLatencyMs,
+              smtp_responded_at: smtpRespondedAt ? smtpRespondedAt.toISOString() : null,
               timestamp: new Date().toISOString(),
             });
             
@@ -134,6 +151,8 @@ export function createEmailWorker() {
               percentage: 0,
               message: `Delivery failed, retrying (attempt ${emailJobRecord.retry_count}): ${error.message}`,
               error: error.message,
+              smtp_latency_ms: smtpLatencyMs,
+              smtp_responded_at: smtpRespondedAt ? smtpRespondedAt.toISOString() : null,
               timestamp: new Date().toISOString(),
             });
 

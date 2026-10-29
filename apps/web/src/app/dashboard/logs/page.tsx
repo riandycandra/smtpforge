@@ -16,6 +16,9 @@ interface EmailLog {
   attachments?: Array<{ filename: string; path?: string; url?: string; content_type?: string }>;
   error_message?: string;
   smtp_response?: string;
+  latency_ms?: number | null;
+  smtp_latency_ms?: number | null;
+  smtp_responded_at?: string | null;
   created_at: string;
   ApiKey?: {
     name: string;
@@ -464,6 +467,31 @@ export default function LogsDashboardPage() {
                     {formatDate(selectedLog.created_at)}
                   </span>
                 </div>
+                {selectedLog.smtp_responded_at && (
+                  <div className="flex items-center gap-3">
+                    <span className="w-16 text-gray-400 dark:text-gray-500 font-medium">SMTP Reply:</span>
+                    <span className="text-gray-700 dark:text-gray-300 font-mono text-xs">
+                      {formatDate(selectedLog.smtp_responded_at)}
+                    </span>
+                  </div>
+                )}
+                {(selectedLog.smtp_latency_ms !== undefined && selectedLog.smtp_latency_ms !== null || selectedLog.latency_ms !== undefined && selectedLog.latency_ms !== null) && (
+                  <div className="flex items-center gap-3 pt-1">
+                    <span className="w-16 text-gray-400 dark:text-gray-500 font-medium">Latency:</span>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {selectedLog.smtp_latency_ms !== undefined && selectedLog.smtp_latency_ms !== null && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800" title="Time taken by upstream SMTP server to process and respond">
+                          SMTP Server: {selectedLog.smtp_latency_ms}ms
+                        </span>
+                      )}
+                      {selectedLog.latency_ms !== undefined && selectedLog.latency_ms !== null && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 border border-gray-200 dark:border-gray-700" title="Total processing time including queue and attachment handling">
+                          Total Worker: {selectedLog.latency_ms}ms
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -566,8 +594,15 @@ export default function LogsDashboardPage() {
 
                     {selectedLog.smtp_response && (
                       <div className="bg-gray-800 dark:bg-gray-950 rounded-xl p-4 shadow-xl inset-ring inset-ring-white/5">
-                        <div className="flex items-center gap-2 mb-3 text-gray-400 font-bold text-xs uppercase tracking-wider">
-                          <Server className="w-4 h-4" /> SMTP Transcript
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-2 text-gray-400 font-bold text-xs uppercase tracking-wider">
+                            <Server className="w-4 h-4" /> SMTP Transcript
+                          </div>
+                          {selectedLog.smtp_responded_at && (
+                            <span className="text-[11px] font-mono text-gray-400">
+                              Responded at: {formatDate(selectedLog.smtp_responded_at)}
+                            </span>
+                          )}
                         </div>
                         <pre className="text-[11px] font-mono text-gray-300 overflow-x-auto leading-relaxed custom-scrollbar">
                           {selectedLog.smtp_response}
