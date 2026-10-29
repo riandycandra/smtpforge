@@ -427,8 +427,8 @@ export default function LogsDashboardPage() {
               </h2>
 
               <div className="flex flex-col space-y-2 text-sm">
-                <div className="flex items-start gap-3">
-                  <span className="w-16 text-gray-400 dark:text-gray-500 font-medium">From:</span>
+                <div className="flex items-start gap-4">
+                  <span className="w-24 shrink-0 text-gray-400 dark:text-gray-500 font-medium">From:</span>
                   <span className="flex-1 font-medium text-gray-700 dark:text-gray-300">
                     {selectedLog.from_email ? (
                       selectedLog.from_name
@@ -439,45 +439,45 @@ export default function LogsDashboardPage() {
                     )}
                   </span>
                 </div>
-                <div className="flex items-start gap-3">
-                  <span className="w-16 text-gray-400 dark:text-gray-500 font-medium">To:</span>
+                <div className="flex items-start gap-4">
+                  <span className="w-24 shrink-0 text-gray-400 dark:text-gray-500 font-medium">To:</span>
                   <span className="flex-1 font-medium text-gray-700 dark:text-gray-300">
                     {selectedLog.to.join(', ')}
                   </span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="w-16 text-gray-400 dark:text-gray-500 font-medium">API Key:</span>
+                <div className="flex items-center gap-4">
+                  <span className="w-24 shrink-0 text-gray-400 dark:text-gray-500 font-medium">API Key:</span>
                   <span className="font-medium text-gray-700 dark:text-gray-300">
                     <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 text-gray-700 dark:bg-gray-850 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
                       {selectedLog.ApiKey?.name || 'Unknown'}
                     </span>
                   </span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="w-16 text-gray-400 dark:text-gray-500 font-medium">SMTP:</span>
+                <div className="flex items-center gap-4">
+                  <span className="w-24 shrink-0 text-gray-400 dark:text-gray-500 font-medium">SMTP:</span>
                   <span className="font-medium text-gray-700 dark:text-gray-300">
                     <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400 border border-blue-200/50 dark:border-blue-900/50">
                       {selectedLog.SmtpAccount?.name || 'Unknown'}
                     </span>
                   </span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="w-16 text-gray-400 dark:text-gray-500 font-medium">Date:</span>
+                <div className="flex items-center gap-4">
+                  <span className="w-24 shrink-0 text-gray-400 dark:text-gray-500 font-medium">Date:</span>
                   <span className="text-gray-500 dark:text-gray-400">
                     {formatDate(selectedLog.created_at)}
                   </span>
                 </div>
                 {selectedLog.smtp_responded_at && (
-                  <div className="flex items-center gap-3">
-                    <span className="w-16 text-gray-400 dark:text-gray-500 font-medium">SMTP Reply:</span>
+                  <div className="flex items-center gap-4">
+                    <span className="w-24 shrink-0 text-gray-400 dark:text-gray-500 font-medium whitespace-nowrap">SMTP Reply:</span>
                     <span className="text-gray-700 dark:text-gray-300 font-mono text-xs">
                       {formatDate(selectedLog.smtp_responded_at)}
                     </span>
                   </div>
                 )}
                 {(selectedLog.smtp_latency_ms !== undefined && selectedLog.smtp_latency_ms !== null || selectedLog.latency_ms !== undefined && selectedLog.latency_ms !== null) && (
-                  <div className="flex items-center gap-3 pt-1">
-                    <span className="w-16 text-gray-400 dark:text-gray-500 font-medium">Latency:</span>
+                  <div className="flex items-center gap-4 pt-1">
+                    <span className="w-24 shrink-0 text-gray-400 dark:text-gray-500 font-medium">Latency:</span>
                     <div className="flex flex-wrap items-center gap-2">
                       {selectedLog.smtp_latency_ms !== undefined && selectedLog.smtp_latency_ms !== null && (
                         <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800" title="Time taken by upstream SMTP server to process and respond">
