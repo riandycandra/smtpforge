@@ -578,7 +578,7 @@ export default function LogsDashboardPage() {
                 <div className="flex items-center gap-4">
                   <span className="w-24 shrink-0 text-gray-400 dark:text-gray-500 font-medium">API Key:</span>
                   <span className="font-medium text-gray-700 dark:text-gray-300">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 text-gray-700 dark:bg-gray-850 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 text-gray-700 dark:bg-gray-850 dark:text-black-300 border border-gray-200 dark:border-gray-700">
                       {selectedLog.ApiKey?.name || 'Unknown'}
                     </span>
                   </span>
