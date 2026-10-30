@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Mail, Key, Activity, Server, LayoutDashboard, LogOut, Settings as SettingsIcon, Sun, Moon, Bell, PanelLeftClose, PanelLeft } from 'lucide-react';
 import { AuthService } from '@/services/api/auth.service';
@@ -22,7 +22,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const router = useRouter();
   const { theme, toggleTheme } = useTheme();
-  const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
+  const [isHovered, setIsHovered] = useState<boolean>(false);
+  const isCollapsed = useSyncExternalStore(
+    (onStoreChange) => {
+      window.addEventListener('storage', onStoreChange);
+      return () => window.removeEventListener('storage', onStoreChange);
+    },
+    () => localStorage.getItem('sidebar_collapsed') === 'true',
+    () => false
+  );
+
+  const isExpanded = !isCollapsed || isHovered;
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
@@ -31,19 +41,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
   }, [router]);
 
-  useEffect(() => {
-    const saved = localStorage.getItem('sidebar_collapsed');
-    if (saved !== null) {
-      setIsCollapsed(saved === 'true');
-    }
-  }, []);
-
   const toggleSidebar = () => {
-    setIsCollapsed(prev => {
-      const next = !prev;
-      localStorage.setItem('sidebar_collapsed', String(next));
-      return next;
-    });
+    const next = !isCollapsed;
+    setIsHovered(false);
+    localStorage.setItem('sidebar_collapsed', String(next));
+    window.dispatchEvent(new Event('storage'));
   };
 
   const handleLogout = () => {
@@ -53,15 +55,33 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-950 overflow-hidden">
+      {/* Sidebar Spacer to reserve layout space when collapsed */}
+      <div
+        className="shrink-0"
+        style={{
+          width: isCollapsed ? '5rem' : '16rem',
+          transition: 'width 300ms cubic-bezier(0.4, 0, 0.2, 1)',
+        }}
+        aria-hidden="true"
+      />
+
       {/* Sidebar */}
       <aside
-        className={`bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col transition-all duration-300 ease-in-out shrink-0 select-none ${
-          isCollapsed ? 'w-20' : 'w-64'
+        onMouseEnter={() => {
+          if (isCollapsed) setIsHovered(true);
+        }}
+        onMouseLeave={() => {
+          setIsHovered(false);
+        }}
+        style={{
+          width: isExpanded ? '16rem' : '5rem',
+          transition: 'width 300ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1)',
+        }}
+        className={`fixed inset-y-0 left-0 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col z-30 select-none overflow-hidden ${
+          isExpanded ? 'shadow-2xl' : ''
         }`}
       >
-        <div className={`h-16 flex items-center border-b border-gray-200 dark:border-gray-800 transition-all duration-300 ${
-          isCollapsed ? 'justify-center px-2' : 'gap-3 px-5'
-        }`}>
+        <div className="h-16 flex items-center px-5 border-b border-gray-200 dark:border-gray-800">
           <div className="w-8 h-8 relative rounded-lg overflow-hidden border border-gray-100 dark:border-gray-800 shrink-0">
             <Image
               src="/icon.svg"
@@ -71,15 +91,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               priority
             />
           </div>
-          {!isCollapsed && (
-            <span className="text-lg text-gray-900 dark:text-gray-100 truncate animate-in fade-in duration-200">
+          <div className={`overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] whitespace-nowrap ${
+            isExpanded ? 'max-w-[200px] opacity-100 ml-3' : 'max-w-0 opacity-0 ml-0 pointer-events-none'
+          }`}>
+            <span className="text-lg text-gray-900 dark:text-gray-100">
               <span className="font-bold">SMTP</span> Forge
             </span>
-          )}
+          </div>
         </div>
 
-        <nav className="flex-1 overflow-y-auto py-4 custom-scrollbar">
-          <ul className={`space-y-1 ${isCollapsed ? 'px-2' : 'px-3'}`}>
+        <nav className="flex-1 overflow-y-auto py-4 px-3 custom-scrollbar overflow-x-hidden">
+          <ul className="space-y-1">
             {navigation.map((item) => {
               const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
               const Icon = item.icon;
@@ -87,25 +109,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <li key={item.name}>
                   <Link
                     href={item.href}
-                    title={isCollapsed ? item.name : undefined}
-                    className={`flex items-center rounded-lg text-sm font-medium transition-all ${
-                      isCollapsed
-                        ? 'justify-center px-0 py-2.5 h-10 w-full'
-                        : 'px-3 py-2'
-                    } ${
+                    title={!isExpanded ? item.name : undefined}
+                    className={`flex items-center rounded-lg text-sm font-medium h-10 px-3 transition-colors duration-200 ${
                       isActive
                         ? 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-400'
                         : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
                     }`}
                   >
-                    <Icon className={`h-5 w-5 shrink-0 ${
-                      !isCollapsed ? 'mr-3' : ''
-                    } ${isActive ? 'text-blue-700 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'}`} />
-                    {!isCollapsed && (
-                      <span className="truncate animate-in fade-in duration-200">
+                    <Icon className={`h-5 w-5 shrink-0 transition-colors duration-200 ${
+                      isActive ? 'text-blue-700 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'
+                    }`} />
+                    <div className={`overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] whitespace-nowrap ${
+                      isExpanded ? 'max-w-[180px] opacity-100 ml-3' : 'max-w-0 opacity-0 ml-0 pointer-events-none'
+                    }`}>
+                      <span className="truncate">
                         {item.name}
                       </span>
-                    )}
+                    </div>
                   </Link>
                 </li>
               );
@@ -113,24 +133,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </ul>
         </nav>
 
-        <div className={`border-t border-gray-200 dark:border-gray-800 ${isCollapsed ? 'p-2' : 'p-4'}`}>
+        <div className="border-t border-gray-200 dark:border-gray-800 p-3">
           <button
             onClick={handleLogout}
-            title={isCollapsed ? "Logout" : undefined}
-            className={`flex items-center w-full text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 rounded-lg transition-all ${
-              isCollapsed
-                ? 'justify-center px-0 py-2.5 h-10'
-                : 'px-3 py-2'
-            }`}
+            title={!isExpanded ? "Logout" : undefined}
+            className="flex items-center w-full h-10 px-3 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200"
           >
-            <LogOut className={`h-5 w-5 shrink-0 ${
-              !isCollapsed ? 'mr-3' : ''
-            } text-gray-400 dark:text-gray-500`} />
-            {!isCollapsed && (
-              <span className="truncate animate-in fade-in duration-200">
+            <LogOut className="h-5 w-5 shrink-0 text-gray-400 dark:text-gray-500" />
+            <div className={`overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] whitespace-nowrap ${
+              isExpanded ? 'max-w-[180px] opacity-100 ml-3' : 'max-w-0 opacity-0 ml-0 pointer-events-none'
+            }`}>
+              <span className="truncate">
                 Logout
               </span>
-            )}
+            </div>
           </button>
         </div>
       </aside>

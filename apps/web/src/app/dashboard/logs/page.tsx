@@ -270,7 +270,7 @@ export default function LogsDashboardPage() {
                       <StatusBadge status={log.status} />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 text-gray-700 dark:bg-gray-850 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 text-gray-700 dark:bg-gray-850 dark:text-black-300 border border-gray-200 dark:border-gray-700">
                         {log.ApiKey?.name || 'Unknown'}
                       </span>
                     </td>
