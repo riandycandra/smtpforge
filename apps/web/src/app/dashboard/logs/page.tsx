@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { LogsService } from '@/services/api/logs.service';
 import { Mail, Search, RefreshCw, AlertCircle, CheckCircle, Clock, Loader2, RotateCcw, Eye, X, Server, Paperclip, ExternalLink as ExternalLinkIcon, Maximize2, Minimize2, Expand } from 'lucide-react';
 import DOMPurify from 'dompurify';
+import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 
 interface EmailLog {
   id: string;
@@ -169,20 +170,27 @@ export default function LogsDashboardPage() {
   };
 
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [resendingLog, setResendingLog] = useState<EmailLog | null>(null);
+  const [isResending, setIsResending] = useState(false);
 
   const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 5000);
   };
 
-  const handleResend = async (id: string) => {
+  const handleResendConfirm = async () => {
+    if (!resendingLog) return;
+    setIsResending(true);
     try {
-      await LogsService.resendLog(id);
+      await LogsService.resendLog(resendingLog.id);
       showNotification('Email successfully enqueued for resend.', 'success');
+      setResendingLog(null);
       void loadLogs();
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Unknown error';
       showNotification(`Failed to resend: ${message}`, 'error');
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -292,7 +300,7 @@ export default function LogsDashboardPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button
-                          onClick={() => handleResend(log.id)}
+                          onClick={() => setResendingLog(log)}
                           className="mr-2 inline-flex items-center px-3 py-1.5 border border-blue-100 dark:border-blue-800 rounded-lg text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50/30 dark:bg-blue-950/30 hover:bg-blue-50 dark:hover:bg-blue-950 hover:text-blue-700 dark:hover:text-blue-300 hover:border-blue-200 dark:hover:border-blue-700 transition-all active:scale-95 shadow-sm"
                         >
                           <RotateCcw className="w-4 h-4 mr-1 text-blue-500 dark:text-blue-400" />
@@ -361,8 +369,7 @@ export default function LogsDashboardPage() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => {
-                    handleResend(selectedLog.id);
-                    setSelectedLog(null);
+                    setResendingLog(selectedLog);
                   }}
                   className="mr-2 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition-all active:scale-95 inset-ring inset-ring-white/10"
                 >
@@ -627,6 +634,37 @@ export default function LogsDashboardPage() {
           </>
         )}
       </dialog>
+
+      {/* Confirmation Dialog for Resend */}
+      <ConfirmDialog
+        isOpen={Boolean(resendingLog)}
+        onClose={() => {
+          if (!isResending) setResendingLog(null);
+        }}
+        onConfirm={handleResendConfirm}
+        title="Resend Email Confirmation"
+        confirmText={isResending ? 'Resending...' : 'Resend Email'}
+        cancelText="Cancel"
+        variant="warning"
+        isLoading={isResending}
+        description={
+          resendingLog ? (
+            <div className="space-y-3 mt-1">
+              <p>Are you sure you want to resend this email? This will enqueue a new delivery attempt.</p>
+              <div className="bg-gray-50 dark:bg-gray-800/80 rounded-lg p-3 text-xs space-y-1.5 border border-gray-100 dark:border-gray-800">
+                <div className="flex gap-2">
+                  <span className="font-medium text-gray-500 dark:text-gray-400 shrink-0">Recipient:</span>
+                  <span className="text-gray-800 dark:text-gray-200 font-mono truncate">{resendingLog.to.join(', ')}</span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="font-medium text-gray-500 dark:text-gray-400 shrink-0">Subject:</span>
+                  <span className="text-gray-800 dark:text-gray-200 truncate">{resendingLog.subject || '(No Subject)'}</span>
+                </div>
+              </div>
+            </div>
+          ) : undefined
+        }
+      />
 
       {/* Toast Notification */}
       {notification && (
