@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Mail, Key, Activity, Server, LayoutDashboard, LogOut, Settings as SettingsIcon, Sun, Moon, Bell, PanelLeftClose, PanelLeft } from 'lucide-react';
+import { Mail, Key, Activity, Server, LayoutDashboard, LogOut, Settings as SettingsIcon, Sun, Moon, Bell, PanelLeftClose, PanelLeft, ExternalLink, BookOpen } from 'lucide-react';
 import { AuthService } from '@/services/api/auth.service';
 import { useTheme } from '../theme-provider';
 import Image from 'next/image';
@@ -22,6 +22,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const router = useRouter();
   const { theme, toggleTheme } = useTheme();
+  const [docsUrl, setDocsUrl] = useState<string>('/docs');
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const isCollapsed = useSyncExternalStore(
     (onStoreChange) => {
@@ -35,6 +36,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const isExpanded = !isCollapsed || isHovered;
 
   useEffect(() => {
+    // Dynamically resolve docsUrl at browser runtime
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname;
+      // If deployed in OpenShift (e.g. mailer-web-...), point directly to mailer-api route
+      if (hostname.includes('mailer-web-')) {
+        const apiHost = hostname.replace('mailer-web-', 'mailer-api-');
+        setDocsUrl(`${window.location.protocol}//${apiHost}/docs`);
+      } else {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
+        const backendUrl = apiUrl.replace(/\/api\/v1\/?$/, '').replace(/\/$/, '');
+        setDocsUrl(backendUrl ? `${backendUrl}/docs` : '/docs');
+      }
+    }
+
     const token = localStorage.getItem('admin_token');
     if (!token) {
       router.push('/login');
@@ -174,6 +189,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
           {/* Spacer */}
           <div className="flex-1" />
+
+          {/* API Docs Link */}
+          <a
+            href={docsUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-1.5 px-3 h-10 mr-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium transition-all active:scale-95 shadow-sm"
+            aria-label="API Documentation"
+            title="API Documentation"
+          >
+            <BookOpen className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <span className="hidden sm:inline">API Docs</span>
+            <ExternalLink className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
+          </a>
 
           {/* Theme Toggle */}
           <button

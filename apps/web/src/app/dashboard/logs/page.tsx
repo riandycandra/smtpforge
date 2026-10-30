@@ -477,7 +477,7 @@ export default function LogsDashboardPage() {
                 {selectedLog.smtp_responded_at && (
                   <div className="flex items-center gap-4">
                     <span className="w-24 shrink-0 text-gray-400 dark:text-gray-500 font-medium whitespace-nowrap">SMTP Reply:</span>
-                    <span className="text-gray-700 dark:text-gray-300 font-mono text-xs">
+                    <span className="text-gray-500 dark:text-gray-400">
                       {formatDate(selectedLog.smtp_responded_at)}
                     </span>
                   </div>
