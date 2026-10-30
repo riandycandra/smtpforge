@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { LogsService } from '@/services/api/logs.service';
-import { Mail, Search, RefreshCw, AlertCircle, CheckCircle, Clock, Loader2, RotateCcw, Eye, X, Server, Paperclip, ExternalLink as ExternalLinkIcon, Maximize2, Minimize2, Expand } from 'lucide-react';
+import { Mail, Search, RefreshCw, AlertCircle, CheckCircle, Clock, Loader2, RotateCcw, Eye, X, Server, Paperclip, ExternalLink as ExternalLinkIcon, Maximize2, Minimize2, Expand, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import DOMPurify from 'dompurify';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 
@@ -72,11 +72,12 @@ const formatDate = (dateStr: string) => {
 };
 
 export default function LogsDashboardPage() {
-  const PAGE_SIZE = 10;
+  const [pageSize, setPageSize] = useState(5);
   const [logs, setLogs] = useState<EmailLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
+  const [jumpPage, setJumpPage] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [search, setSearch] = useState('');
   const [selectedLog, setSelectedLog] = useState<EmailLog | null>(null);
@@ -103,7 +104,7 @@ export default function LogsDashboardPage() {
       try {
         const res = await LogsService.getLogs({
           page,
-          limit: PAGE_SIZE,
+          limit: pageSize,
           status: statusFilter,
           subject: search,
         }) as unknown as { success: boolean; data: { data: EmailLog[]; meta: { total: number } } };
@@ -120,14 +121,14 @@ export default function LogsDashboardPage() {
 
     fetchLogs();
     return () => { cancelled = true; };
-  }, [page, statusFilter, search]);
+  }, [page, pageSize, statusFilter, search]);
 
   const loadLogs = async () => {
     setLoading(true);
     try {
       const res = await LogsService.getLogs({
         page,
-        limit: PAGE_SIZE,
+        limit: pageSize,
         status: statusFilter,
         subject: search,
       }) as unknown as { success: boolean; data: { data: EmailLog[]; meta: { total: number } } };
@@ -220,18 +221,21 @@ export default function LogsDashboardPage() {
           </div>
 
           {/* Status Filter */}
-          <select
-            className="py-2 px-3 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 outline-none"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            <option value="">All Statuses</option>
-            <option value="sent">Sent</option>
-            <option value="failed">Failed</option>
-            <option value="queued">Queued</option>
-            <option value="processing">Processing</option>
-            <option value="retrying">Retrying</option>
-          </select>
+          <div className="relative inline-flex items-center">
+            <select
+              className="appearance-none py-2 pl-3 pr-8 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 outline-none hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors cursor-pointer"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="">All Statuses</option>
+              <option value="sent">Sent</option>
+              <option value="failed">Failed</option>
+              <option value="queued">Queued</option>
+              <option value="processing">Processing</option>
+              <option value="retrying">Retrying</option>
+            </select>
+            <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400 absolute right-2.5 pointer-events-none" />
+          </div>
 
           {/* Spacer pushes refresh to the right */}
           <div style={{ flex: 1 }} />
@@ -323,30 +327,149 @@ export default function LogsDashboardPage() {
         )}
 
         {/* Pagination Footer */}
-        <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30 flex items-center justify-between">
-          <div className="text-sm text-gray-500 dark:text-gray-400">
-            Showing <span className="font-medium">{(page - 1) * PAGE_SIZE + 1}</span> to <span className="font-medium">{Math.min(page * PAGE_SIZE, total)}</span> of <span className="font-medium">{total}</span> results
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setPage(p => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="px-3 py-1.5 text-sm font-medium border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-            >
-              Previous
-            </button>
-            <div className="flex items-center justify-center min-w-[80px] text-sm font-medium text-gray-600 dark:text-gray-400">
-              Page {page}
+        {(() => {
+          const totalPages = Math.max(1, Math.ceil(total / pageSize));
+          
+          const getPageNumbers = () => {
+            if (totalPages <= 7) {
+              return Array.from({ length: totalPages }, (_, i) => i + 1);
+            }
+            const pages: (number | string)[] = [];
+            const showLeftDots = page > 4;
+            const showRightDots = page < totalPages - 3;
+
+            if (!showLeftDots && showRightDots) {
+              pages.push(1, 2, 3, 4, 5, '...', totalPages);
+            } else if (showLeftDots && !showRightDots) {
+              pages.push(1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+            } else {
+              pages.push(1, '...', page - 1, page, page + 1, '...', totalPages);
+            }
+            return pages;
+          };
+
+          const handleJumpSubmit = (e: React.FormEvent) => {
+            e.preventDefault();
+            const target = parseInt(jumpPage, 10);
+            if (!isNaN(target) && target >= 1 && target <= totalPages) {
+              setPage(target);
+              setJumpPage('');
+            }
+          };
+
+          return (
+            <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30 flex flex-col xl:flex-row items-center justify-between gap-4">
+              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                <div>
+                  {total === 0 ? (
+                    'No results found'
+                  ) : (
+                    <>
+                      Showing <span className="font-medium">{(page - 1) * pageSize + 1}</span> to{' '}
+                      <span className="font-medium">{Math.min(page * pageSize, total)}</span> of{' '}
+                      <span className="font-medium">{total}</span> results
+                    </>
+                  )}
+                </div>
+
+                {/* Show per page selector */}
+                <div className="flex items-center gap-2 pl-2 border-l border-gray-200 dark:border-gray-700">
+                  <span>Show</span>
+                  <div className="relative inline-flex items-center">
+                    <select
+                      value={pageSize}
+                      onChange={(e) => {
+                        setPageSize(Number(e.target.value));
+                        setPage(1);
+                      }}
+                      className="appearance-none py-1 pl-2.5 pr-7 text-xs sm:text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 outline-none hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors cursor-pointer font-medium"
+                    >
+                      <option value={5}>5</option>
+                      <option value={10}>10</option>
+                      <option value={20}>20</option>
+                      <option value={50}>50</option>
+                      <option value={100}>100</option>
+                    </select>
+                    <ChevronDown className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400 absolute right-2 pointer-events-none" />
+                  </div>
+                  <span>per page</span>
+                </div>
+              </div>
+
+              {/* Navigation and Jump to Page */}
+              <div className="flex flex-wrap items-center gap-4 justify-center">
+                <div className="flex items-center gap-1.5 flex-wrap justify-center">
+                  <button
+                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                    className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all mr-1"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    <span>Previous</span>
+                  </button>
+
+                  {getPageNumbers().map((p, idx) => {
+                    if (typeof p === 'string') {
+                      return (
+                        <span
+                          key={`ellipsis-${idx}`}
+                          className="w-8 h-8 flex items-center justify-center text-sm text-gray-400 dark:text-gray-500 select-none"
+                        >
+                          …
+                        </span>
+                      );
+                    }
+
+                    const isCurrent = p === page;
+                    return (
+                      <button
+                        key={p}
+                        onClick={() => setPage(p)}
+                        className={`min-w-8 h-8 px-2 flex items-center justify-center text-sm font-medium rounded-lg transition-all ${
+                          isCurrent
+                            ? 'bg-blue-600 text-white font-semibold shadow-sm'
+                            : 'border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                        }`}
+                      >
+                        {p}
+                      </button>
+                    );
+                  })}
+
+                  <button
+                    onClick={() => setPage(p => p + 1)}
+                    disabled={page >= totalPages || total === 0}
+                    className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all ml-1"
+                  >
+                    <span>Next</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Go to page form */}
+                <form onSubmit={handleJumpSubmit} className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 pl-3 border-l border-gray-200 dark:border-gray-700">
+                  <span>Go to</span>
+                  <input
+                    type="number"
+                    min={1}
+                    max={totalPages}
+                    value={jumpPage}
+                    onChange={(e) => setJumpPage(e.target.value)}
+                    placeholder={String(page)}
+                    className="w-14 px-2 py-1 text-center text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 outline-none focus:border-blue-500 dark:focus:border-blue-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!jumpPage || Number(jumpPage) < 1 || Number(jumpPage) > totalPages}
+                    className="px-2.5 py-1 text-xs font-medium border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  >
+                    Go
+                  </button>
+                </form>
+              </div>
             </div>
-            <button
-              onClick={() => setPage(p => p + 1)}
-              disabled={page * PAGE_SIZE >= total}
-              className="px-3 py-1.5 text-sm font-medium border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-            >
-              Next
-            </button>
-          </div>
-        </div>
+          );
+        })()}
       </div>
 
       {/* Modern Native Dialog Modal */}
