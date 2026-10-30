@@ -1,10 +1,10 @@
-import nodemailer from 'nodemailer';
+import nodemailer, { type Transporter } from 'nodemailer';
 import { SmtpAccount } from '@mailer/database';
 import { decrypt } from '@mailer/database';
 
-const transporterCache = new Map<string, nodemailer.Transporter>();
+const transporterCache = new Map<string, Transporter>();
 
-export async function getTransporter(smtpAccountId: string): Promise<{ transporter: nodemailer.Transporter, fromEmail: string, fromName: string | null }> {
+export async function getTransporter(smtpAccountId: string): Promise<{ transporter: Transporter, fromEmail: string, fromName: string | null }> {
   // If cache is not strictly required, we can create on the fly to avoid stale connections.
   // We recreate them here to avoid stale connections dropping randomly in the background.
   const account = await SmtpAccount.findByPk(smtpAccountId);

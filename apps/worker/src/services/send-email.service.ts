@@ -47,7 +47,7 @@ export async function sendEmailService(payload: EmailJobPayload): Promise<SendRe
 
       return {
         messageId: info.messageId,
-        response: info.response,
+        response: info.response || '',
         rejected: info.rejected || [],
         smtpRespondedAt,
         smtpLatencyMs,
