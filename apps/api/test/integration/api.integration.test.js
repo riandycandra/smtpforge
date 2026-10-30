@@ -4,6 +4,7 @@ const test = require('node:test');
 const dotenv = require('dotenv');
 const { Client } = require('pg');
 
+dotenv.config({ path: path.resolve(__dirname, '../../../../.env') });
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 dotenv.config({ path: path.resolve(__dirname, '../../../../.env.example') });
 

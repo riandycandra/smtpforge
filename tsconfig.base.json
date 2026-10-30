@@ -11,5 +11,6 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true
-  }
+  },
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/__tests__/**"]
 }

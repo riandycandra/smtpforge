@@ -1,7 +1,6 @@
-import { EmailJob } from '@mailer/database';
+import { EmailJob, Op, fn, col } from '@mailer/database';
 import { EMAIL_STATUS, EmailStatus } from '@mailer/shared';
 import { emailQueue } from '../config/queue';
-import { Op, fn, col } from 'sequelize';
 
 interface JobStatQueryResult {
   status: EmailStatus;
